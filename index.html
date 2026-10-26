@@ -1,0 +1,1176 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#B3301C"><link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icono-192.png"><link rel="apple-touch-icon" href="icono-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head><body><title>Cuaderno de Hanzi</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=IBM+Plex+Mono:wght@400;500&family=Hanken+Grotesk:wght@400;500;600&family=Noto+Serif+SC:wght@500;700&display=swap">
+<style>
+/* Cuaderno de caligrafía: papel de arroz, tinta y un sello bermellón.
+   Una columna para el móvil; la barra de pestañas va abajo. */
+:root {
+  --papel: #F3EFE5;
+  --papel-2: #EAE4D6;
+  --tinta: #17140F;
+  --tinta-2: #5F574B;
+  --linea: #D5CCBA;
+  --bermellon: #B3301C;
+  --bermellon-suave: #F1DDD5;
+  --contorno: #DDD4C3;
+  --cuadricula: #E2B8AC;
+  --ok: #2F6B45;
+  --mal: #B3301C;
+  --display: "Playfair Display", "Times New Roman", serif;
+  --hanzi: "Noto Serif SC", "Songti SC", "SimSun", serif;
+  --texto: "Hanken Grotesk", "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --papel: #15130F; --papel-2: #1F1C17; --tinta: #EEE8DA; --tinta-2: #A79E8E;
+    --linea: #39342B; --bermellon: #E2593F; --bermellon-suave: #3A1F18; --contorno: #3A352C;
+    --cuadricula: #5A3128; --ok: #6DB287; --mal: #E2593F; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --papel: #15130F; --papel-2: #1F1C17; --tinta: #EEE8DA; --tinta-2: #A79E8E;
+  --linea: #39342B; --bermellon: #E2593F; --bermellon-suave: #3A1F18; --contorno: #3A352C;
+  --cuadricula: #5A3128; --ok: #6DB287; --mal: #E2593F; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { background: var(--papel); color: var(--tinta); }
+body {
+  font: 400 16px/1.55 var(--texto);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 calc(84px + env(safe-area-inset-bottom, 0px));
+  -webkit-tap-highlight-color: transparent;
+}
+.col { max-width: 640px; margin: 0 auto; }
+button { font: inherit; color: inherit; cursor: pointer; }
+:focus-visible { outline: 2px solid var(--bermellon); outline-offset: 2px; }
+h1, h2, h3 { font-family: var(--display); font-weight: 500; text-transform: uppercase; letter-spacing: .04em; text-wrap: balance; margin: 0; }
+.etq { font: 500 11px/1.3 var(--mono); text-transform: uppercase; letter-spacing: .12em; color: var(--tinta-2); }
+.hz { font-family: var(--hanzi); font-weight: 500; }
+.num { font-variant-numeric: tabular-nums; }
+hr { border: 0; border-top: 1px solid var(--linea); margin: 0; }
+
+/* Cabecera */
+.mast { display: flex; align-items: center; gap: 12px; padding: 18px 0 14px; border-bottom: 1px solid var(--tinta); }
+.sello { width: 40px; height: 40px; flex: none; display: grid; place-items: center; background: var(--bermellon); color: #FBF6EC; font: 700 24px/1 var(--hanzi); border-radius: 3px; }
+.mast .t { display: grid; gap: 2px; min-width: 0; }
+.mast h1 { font-size: 17px; letter-spacing: .08em; }
+.sync { margin-left: auto; text-align: right; }
+
+/* Pestañas */
+.tabs { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; background: var(--papel); border-top: 1px solid var(--tinta);
+  padding: 6px max(8px, env(safe-area-inset-right, 0px)) calc(6px + env(safe-area-inset-bottom, 0px)) max(8px, env(safe-area-inset-left, 0px)); }
+.tabs .col { display: grid; grid-template-columns: repeat(5, 1fr); }
+.tab { background: none; border: 0; padding: 6px 0 4px; display: grid; justify-items: center; gap: 2px; color: var(--tinta-2); }
+.tab .hz { font-size: 20px; line-height: 1.1; }
+.tab .etq { font-size: 9.5px; letter-spacing: .1em; }
+.tab[aria-current="page"] { color: var(--bermellon); }
+.tab[aria-current="page"] .etq { color: var(--bermellon); }
+
+.vista { padding-top: 22px; display: grid; gap: 22px; }
+.vista[hidden] { display: none !important; }
+
+/* Hoy */
+.dia { display: grid; gap: 6px; }
+.dia .grande { font: 500 52px/1 var(--display); text-transform: uppercase; letter-spacing: .02em; }
+.dia .grande small { font-size: 20px; color: var(--tinta-2); letter-spacing: .06em; }
+.bloques { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--tinta); }
+.bloque { display: grid; grid-template-columns: 34px 1fr auto; gap: 4px 12px; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--linea); width: 100%; background: none; border-left: 0; border-right: 0; border-top: 0; text-align: left; }
+.bloque .n { font: 500 13px var(--mono); color: var(--tinta-2); align-self: start; padding-top: 3px; }
+.bloque .q { display: grid; gap: 2px; min-width: 0; }
+.bloque .q b { font: 600 17px/1.25 var(--texto); }
+.bloque .q span { color: var(--tinta-2); font-size: 14px; }
+.chip { font: 500 10.5px/1 var(--mono); text-transform: uppercase; letter-spacing: .1em; padding: 6px 8px; border: 1px solid var(--linea); border-radius: 2px; white-space: nowrap; color: var(--tinta-2); }
+.chip.hecho { background: var(--tinta); color: var(--papel); border-color: var(--tinta); }
+.chip.ahora { border-color: var(--bermellon); color: var(--bermellon); }
+.bloque.hecho .q b { text-decoration: line-through; text-decoration-thickness: 1px; color: var(--tinta-2); }
+.nota { border-left: 2px solid var(--bermellon); padding: 2px 0 2px 12px; color: var(--tinta-2); font-size: 14.5px; }
+.nota b { color: var(--tinta); font-weight: 600; }
+
+/* Botones */
+.btns { display: flex; flex-wrap: wrap; gap: 8px; }
+.btn { border: 1px solid var(--tinta); background: none; padding: 11px 16px; border-radius: 2px; font: 500 13px/1 var(--mono); text-transform: uppercase; letter-spacing: .08em; min-height: 44px; }
+.btn.pri { background: var(--tinta); color: var(--papel); }
+.btn.rojo { background: var(--bermellon); border-color: var(--bermellon); color: #FBF6EC; }
+.btn.sec { border-color: var(--linea); color: var(--tinta-2); }
+.btn:disabled { opacity: .4; cursor: default; }
+.btn.ancho { flex: 1 1 140px; }
+.volver { background: none; border: 0; padding: 4px 0; font: 500 12px var(--mono); text-transform: uppercase; letter-spacing: .1em; color: var(--tinta-2); justify-self: start; }
+
+/* Panel de un bloque */
+.panel { display: grid; gap: 18px; }
+.paso { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; border-bottom: 1px solid var(--tinta); padding-bottom: 8px; }
+.paso h2 { font-size: 22px; }
+.barra { height: 2px; background: var(--linea); }
+.barra i { display: block; height: 100%; background: var(--bermellon); transition: width .3s; }
+
+/* Ficha de carácter */
+.ficha { display: grid; grid-template-columns: auto 1fr; gap: 6px 18px; align-items: center; }
+.ficha .hz-g { font: 500 92px/1 var(--hanzi); grid-row: span 3; }
+.ficha .py { font: 500 26px/1.1 var(--texto); }
+.ficha .sig { font-size: 18px; }
+.ficha .comp { font-family: var(--mono); font-size: 13px; color: var(--tinta-2); }
+.mnemo { font: 400 17px/1.5 var(--texto); }
+.ejemplos { display: grid; gap: 0; border-top: 1px solid var(--linea); }
+.ej { display: grid; grid-template-columns: auto auto 1fr auto; gap: 10px; align-items: baseline; padding: 9px 0; border-bottom: 1px solid var(--linea); background: none; border-left: 0; border-right: 0; border-top: 0; text-align: left; width: 100%; }
+.ej .hz { font-size: 22px; }
+.ej .p { font-weight: 600; }
+.ej .s { color: var(--tinta-2); font-size: 14px; min-width: 0; }
+.altavoz { width: 44px; height: 44px; border: 1px solid var(--linea); border-radius: 50%; background: none; display: inline-grid; place-items: center; flex: none; }
+.altavoz svg { width: 18px; height: 18px; }
+.mini-alt { font: 500 11px var(--mono); color: var(--bermellon); }
+
+/* Lienzo 田字格 */
+.lienzo { position: relative; width: 100%; max-width: 320px; aspect-ratio: 1; margin: 0 auto; border: 1.5px solid var(--bermellon); background: var(--papel); touch-action: none; }
+.lienzo svg.grid { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.lienzo .hw { position: absolute; inset: 0; }
+.lienzo .hw svg { display: block; }
+.estado-quiz { text-align: center; min-height: 1.5em; font-size: 15px; color: var(--tinta-2); }
+.estado-quiz.ok { color: var(--ok); }
+.estado-quiz.mal { color: var(--mal); }
+.pista { text-align: center; display: grid; gap: 4px; }
+.pista .py { font: 600 26px/1.1 var(--texto); }
+.pista .sig { font-size: 17px; color: var(--tinta-2); }
+
+/* Tarjeta de reconocer */
+.carta { border: 1px solid var(--linea); padding: 26px 16px; display: grid; justify-items: center; gap: 10px; text-align: center; }
+.carta .hz-g { font: 500 112px/1 var(--hanzi); }
+.carta .resp { display: grid; gap: 4px; justify-items: center; }
+
+/* Tonos */
+.tonos-op { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+.op { border: 1px solid var(--tinta); background: none; padding: 14px 8px; border-radius: 2px; display: grid; justify-items: center; gap: 4px; min-height: 64px; }
+.op .py { font: 600 21px/1.1 var(--texto); }
+.op .etq { font-size: 10px; }
+.op.ok { background: var(--ok); border-color: var(--ok); color: var(--papel); }
+.op.ok .etq, .op.mal .etq { color: inherit; }
+.op.mal { background: var(--bermellon-suave); border-color: var(--mal); }
+.curva { width: 54px; height: 26px; }
+.curva path { fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; }
+.marcador { display: flex; justify-content: space-between; }
+
+/* Lecturas */
+.lista-lec { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--tinta); }
+.lec-item { display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; padding: 14px 0; border-bottom: 1px solid var(--linea); width: 100%; background: none; border-left: 0; border-right: 0; border-top: 0; text-align: left; }
+.lec-item b { font: 600 17px var(--texto); }
+.lec-item:disabled { cursor: default; }
+.lec-item:disabled b { color: var(--tinta-2); }
+.linea { display: grid; gap: 3px; padding: 12px 0; border-bottom: 1px solid var(--linea); width: 100%; background: none; border-left: 0; border-right: 0; border-top: 0; text-align: left; }
+.linea .hz { font-size: 26px; line-height: 1.45; letter-spacing: .02em; }
+.linea .hz u { text-decoration: none; border-bottom: 1.5px dotted var(--bermellon); }
+.linea .py { color: var(--tinta); font-size: 15px; }
+.linea .es { color: var(--tinta-2); font-size: 14.5px; }
+.linea.sonando { background: var(--papel-2); }
+.glosas { display: grid; gap: 4px; font-size: 14.5px; color: var(--tinta-2); }
+.glosas .hz { color: var(--tinta); }
+.interruptores { display: flex; gap: 8px; flex-wrap: wrap; }
+.interruptor { border: 1px solid var(--linea); background: none; padding: 8px 12px; border-radius: 2px; font: 500 11.5px var(--mono); text-transform: uppercase; letter-spacing: .08em; color: var(--tinta-2); min-height: 40px; }
+.interruptor[aria-pressed="true"] { border-color: var(--tinta); color: var(--tinta); background: var(--papel-2); }
+
+/* Frases */
+textarea { width: 100%; min-height: 120px; resize: vertical; font: 400 22px/1.5 var(--hanzi); background: var(--papel-2); color: var(--tinta); border: 1px solid var(--linea); border-radius: 2px; padding: 12px; }
+.corr { display: grid; gap: 4px; padding: 12px 0; border-bottom: 1px solid var(--linea); }
+.corr .hz { font-size: 22px; }
+.corr .mal-txt { text-decoration: line-through; color: var(--tinta-2); font-size: 18px; }
+.corr .es { color: var(--tinta-2); font-size: 14.5px; }
+
+/* Avance */
+.cifras { display: grid; grid-template-columns: repeat(2, 1fr); border-top: 1px solid var(--tinta); }
+.cifra { padding: 14px 0; border-bottom: 1px solid var(--linea); display: grid; gap: 2px; }
+.cifra:nth-child(odd) { padding-right: 12px; border-right: 1px solid var(--linea); }
+.cifra:nth-child(even) { padding-left: 14px; }
+.cifra .v { font: 500 38px/1 var(--display); }
+.cifra .v small { font-size: 16px; color: var(--tinta-2); }
+.ritmo { font-size: 15px; }
+.cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; max-width: 340px; }
+.cal .d { aspect-ratio: 1; border: 1px solid var(--linea); display: grid; place-items: center; font: 400 10px var(--mono); color: var(--tinta-2); border-radius: 2px; }
+.cal .d.l1 { background: var(--bermellon-suave); }
+.cal .d.l2 { background: color-mix(in srgb, var(--bermellon) 45%, var(--papel)); color: var(--tinta); }
+.cal .d.l3 { background: var(--bermellon); color: #FBF6EC; border-color: var(--bermellon); }
+.cal .d.hoy { outline: 2px solid var(--tinta); outline-offset: 1px; }
+.cal .d.fuera { visibility: hidden; }
+.cal .cab { font: 500 10px var(--mono); text-align: center; color: var(--tinta-2); }
+.leyenda { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
+.leyenda span { display: inline-flex; gap: 6px; align-items: center; }
+.leyenda i { width: 12px; height: 12px; display: inline-block; border: 1px solid var(--linea); }
+.mapa { display: grid; grid-template-columns: repeat(auto-fill, minmax(40px, 1fr)); gap: 3px; }
+.mapa button { aspect-ratio: 1; border: 1px solid var(--linea); background: none; font: 500 20px/1 var(--hanzi); color: color-mix(in srgb, var(--tinta-2) 55%, var(--papel)); padding: 0; border-radius: 2px; }
+.mapa button.f1 { color: var(--tinta); background: var(--papel-2); }
+.mapa button.f2 { color: var(--tinta); border-color: var(--tinta-2); }
+.mapa button.f3 { color: var(--papel); background: var(--tinta); border-color: var(--tinta); }
+.mapa button.sig { border-color: var(--bermellon); color: var(--bermellon); }
+.ajuste { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+
+/* Escribir */
+.selector { display: grid; grid-template-columns: repeat(auto-fill, minmax(44px, 1fr)); gap: 3px; max-height: 200px; overflow-y: auto; border-top: 1px solid var(--linea); border-bottom: 1px solid var(--linea); padding: 6px 0; }
+.selector button { aspect-ratio: 1; border: 1px solid transparent; background: none; font: 500 22px/1 var(--hanzi); padding: 0; border-radius: 2px; }
+.selector button[aria-pressed="true"] { border-color: var(--bermellon); color: var(--bermellon); }
+.selector button.nuevo { color: var(--tinta-2); }
+
+/* Guía */
+.guia { display: grid; gap: 26px; }
+.guia section { display: grid; gap: 10px; }
+.guia h2 { font-size: 21px; border-bottom: 1px solid var(--tinta); padding-bottom: 6px; }
+.guia p { margin: 0; max-width: 65ch; }
+.tabla { overflow-x: auto; }
+.tabla table { border-collapse: collapse; width: 100%; font-size: 14.5px; }
+.tabla th, .tabla td { text-align: left; padding: 8px 10px 8px 0; border-bottom: 1px solid var(--linea); vertical-align: top; }
+.tabla th { font: 500 10.5px var(--mono); text-transform: uppercase; letter-spacing: .1em; color: var(--tinta-2); }
+.tabla td b { font-weight: 600; }
+.cuarteto { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.cuarteto button { border: 1px solid var(--linea); background: none; padding: 10px 4px; display: grid; justify-items: center; gap: 2px; border-radius: 2px; }
+.cuarteto .hz { font-size: 26px; }
+.trazos { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; }
+.trazo { border: 1px solid var(--linea); padding: 10px; display: grid; gap: 4px; }
+.trazo svg { width: 40px; height: 40px; }
+.trazo svg path { fill: none; stroke: var(--tinta); stroke-width: 7; stroke-linecap: round; stroke-linejoin: round; }
+.reglas { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
+
+/* Entrar */
+.entrar { display: grid; gap: 8px; max-width: 360px; }
+.entrar input { font: 500 20px/1.2 var(--texto); color: var(--tinta); background: var(--papel-2); border: 1px solid var(--linea); border-bottom: 1.5px solid var(--tinta); border-radius: 2px; padding: 12px; width: 100%; }
+.entrar #i-pin { font-family: var(--mono); letter-spacing: .5em; }
+.entrar label { margin-top: 8px; }
+.entrar .estado-quiz { text-align: left; }
+
+.vacio { color: var(--tinta-2); font-size: 15px; }
+.aviso { font-size: 14px; color: var(--tinta-2); }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+@media (min-width: 560px) {
+  .tonos-op { grid-template-columns: repeat(4, 1fr); }
+  .dia .grande { font-size: 64px; }
+}
+</style>
+
+<div class="col">
+  <header class="mast">
+    <div class="sello" aria-hidden="true">汉</div>
+    <div class="t">
+      <h1>Cuaderno de Hanzi</h1>
+      <span class="etq" id="m-fecha"></span>
+    </div>
+    <span class="etq sync" id="m-sync">Sin conexión</span>
+  </header>
+
+  <main>
+    <section class="vista" id="v-entrar" hidden></section>
+    <section class="vista" id="v-hoy" hidden></section>
+    <section class="vista" id="v-escribir" hidden></section>
+    <section class="vista" id="v-tonos" hidden></section>
+    <section class="vista" id="v-leer" hidden></section>
+    <section class="vista" id="v-avance" hidden></section>
+    <section class="vista" id="v-guia" hidden></section>
+  </main>
+</div>
+
+<nav class="tabs" aria-label="Secciones">
+  <div class="col">
+    <button class="tab" data-v="hoy" aria-current="page"><span class="hz">今</span><span class="etq">Hoy</span></button>
+    <button class="tab" data-v="escribir"><span class="hz">写</span><span class="etq">Escribir</span></button>
+    <button class="tab" data-v="tonos"><span class="hz">声</span><span class="etq">Tonos</span></button>
+    <button class="tab" data-v="leer"><span class="hz">读</span><span class="etq">Leer</span></button>
+    <button class="tab" data-v="avance"><span class="hz">进</span><span class="etq">Avance</span></button>
+  </div>
+</nav>
+
+<script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.7.2/dist/hanzi-writer.min.js"></script>
+<script>
+const D = {"caracteres":[{"h":"一","p":"yī","s":"uno","c":"1 trazo horizontal","m":"Una sola raya: uno.","t":"","e":["一","一点儿"],"a":"一"},{"h":"二","p":"èr","s":"dos","c":"2 horizontales","m":"Dos rayas. La de abajo es más larga: es el suelo.","t":"","e":["二"],"a":"二"},{"h":"三","p":"sān","s":"tres","c":"3 horizontales","m":"Tres rayas. La del medio es la más corta.","t":"","e":["三"],"a":"三"},{"h":"十","p":"shí","s":"diez","c":"一 + 丨","m":"Una cruz: en China el diez se hace con los dedos cruzados.","t":"","e":["十"],"a":"十"},{"h":"人","p":"rén","s":"persona","c":"丿 + ㇏","m":"Dos piernas que caminan.","t":"","e":["人"],"a":"人"},{"h":"口","p":"kǒu","s":"boca","c":"3 trazos: 丨 𠃍 一","m":"Una boca abierta. Como componente casi siempre indica algo que se dice o se come.","t":"","e":[],"a":"口"},{"h":"大","p":"dà","s":"grande","c":"一 + 人","m":"Una persona que abre los brazos para mostrar lo grande que es algo.","t":"","e":["大"],"a":"大"},{"h":"小","p":"xiǎo","s":"pequeño","c":"亅 + 2 puntos","m":"Un palito con dos migajas a los lados: cosas pequeñas.","t":"","e":["小","小姐"],"a":"小"},{"h":"中","p":"zhōng","s":"medio, centro","c":"口 + 丨","m":"Una flecha que atraviesa el centro del blanco.","t":"","e":["中国","中午"],"a":"中"},{"h":"日","p":"rì","s":"sol, día","c":"口 + 一","m":"El sol con una mancha en el centro.","t":"","e":[],"a":"日"},{"h":"月","p":"yuè","s":"luna, mes","c":"冂 + 2 horizontales","m":"La luna creciente. Como componente a menudo significa «cuerpo» o «carne»: 脑, 朋, 服.","t":"","e":["月"],"a":"月"},{"h":"水","p":"shuǐ","s":"agua","c":"亅 + salpicaduras","m":"Un chorro de agua que salpica a los lados.","t":"","e":["水","水果"],"a":"水"},{"h":"氵","p":"shuǐ","s":"agua (componente)","c":"3 gotas","m":"Las tres gotas de 水 cuando va a la izquierda: todo lo líquido.","t":"c","e":[],"a":null},{"h":"女","p":"nǚ","s":"mujer","c":"3 trazos","m":"Una mujer arrodillada con los brazos cruzados.","t":"","e":["女儿"],"a":"女"},{"h":"子","p":"zǐ","s":"niño, hijo","c":"3 trazos","m":"Un bebé envuelto en una manta, con los brazos fuera.","t":"","e":["杯子","儿子","椅子"],"a":"紫"},{"h":"好","p":"hǎo","s":"bien, bueno","c":"女 + 子","m":"Una mujer con su hijo: eso es algo bueno.","t":"","e":["好"],"a":"好"},{"h":"四","p":"sì","s":"cuatro","c":"囗 + 儿","m":"Una ventana con las cortinas recogidas.","t":"","e":["四"],"a":"四"},{"h":"五","p":"wǔ","s":"cinco","c":"4 trazos","m":"Escríbelo en 4 trazos: arriba, el palo, el gancho y la base.","t":"","e":["五"],"a":"五"},{"h":"六","p":"liù","s":"seis","c":"亠 + 八","m":"Un techito sobre dos patas.","t":"","e":["六"],"a":"六"},{"h":"七","p":"qī","s":"siete","c":"一 + 乚","m":"Un 十 al revés con la cola doblada hacia la derecha.","t":"","e":["七"],"a":"七"},{"h":"八","p":"bā","s":"ocho","c":"丿 + ㇏","m":"Dos trazos que se separan, como el 8 que se abre.","t":"","e":["八"],"a":"八"},{"h":"九","p":"jiǔ","s":"nueve","c":"丿 + 乙","m":"Un brazo con un gancho largo.","t":"","e":["九"],"a":"九"},{"h":"亻","p":"rén","s":"persona (componente)","c":"丿 + 丨","m":"人 cuando va a la izquierda: algo que tiene que ver con personas.","t":"c","e":[],"a":null},{"h":"你","p":"nǐ","s":"tú","c":"亻 + 尔","m":"Persona + 尔 (antiguo «tú»): la persona que tengo enfrente.","t":"","e":["你"],"a":"你"},{"h":"我","p":"wǒ","s":"yo","c":"手 + 戈","m":"Una mano (手) que sostiene una alabarda (戈): yo, defendiéndome.","t":"","e":["我","我们"],"a":"我"},{"h":"他","p":"tā","s":"él","c":"亻 + 也","m":"Persona + 也: «esa persona», él.","t":"","e":["他"],"a":"他"},{"h":"她","p":"tā","s":"ella","c":"女 + 也","m":"Igual que 他 pero con 女: ella. Suenan idéntico.","t":"","e":["她"],"a":"她"},{"h":"门","p":"mén","s":"puerta","c":"丶 + 冂","m":"Una puerta vista de frente.","t":"","e":[],"a":"门"},{"h":"们","p":"men","s":"plural de personas","c":"亻 + 门","m":"Personas que salen por la puerta: varias. 门 mén da el sonido.","t":"","e":["我们"],"a":"我们"},{"h":"不","p":"bù","s":"no","c":"一 + 丿 + 丨 + 丶","m":"Una raya encima que bloquea lo que quiere crecer: no.","t":"","e":["不","不客气","对不起"],"a":"不"},{"h":"是","p":"shì","s":"ser","c":"日 + 𤴓","m":"Lo que está bajo el sol es la verdad: ser, es.","t":"","e":["是"],"a":"是"},{"h":"马","p":"mǎ","s":"caballo","c":"3 trazos","m":"Un caballo de perfil: crin, lomo y patas.","t":"","e":[],"a":"马"},{"h":"吗","p":"ma","s":"¿…? (partícula de pregunta)","c":"口 + 马","m":"Una boca y un caballo: «¿mǎ?», con la boca preguntas. 马 da el sonido.","t":"","e":["吗"],"a":"好吗"},{"h":"呢","p":"ne","s":"¿y…?","c":"口 + 尼","m":"Boca + 尼 (ní, el sonido): «¿y tú?».","t":"","e":["呢"],"a":"你呢"},{"h":"上","p":"shàng","s":"arriba","c":"⺊ + 一","m":"Un trazo que apunta hacia arriba sobre la línea del suelo.","t":"","e":["上","上午"],"a":"上"},{"h":"下","p":"xià","s":"abajo","c":"一 + 卜","m":"Un trazo que cuelga por debajo de la línea.","t":"","e":["下","下午","下雨"],"a":"下"},{"h":"天","p":"tiān","s":"cielo, día","c":"一 + 大","m":"Lo que está por encima de la persona grande: el cielo.","t":"","e":["今天","明天","天气"],"a":"天"},{"h":"今","p":"jīn","s":"ahora, hoy","c":"人 + 一 + ㇇","m":"Bajo el techo 人, en este preciso momento.","t":"","e":["今天"],"a":"今"},{"h":"年","p":"nián","s":"año","c":"6 trazos","m":"Una persona que carga la cosecha: pasó un año.","t":"","e":["年"],"a":"年"},{"h":"明","p":"míng","s":"claro; 明天 mañana","c":"日 + 月","m":"Sol y luna juntos: todo claro, brillante.","t":"","e":["明天"],"a":"明"},{"h":"昨","p":"zuó","s":"ayer","c":"日 + 乍","m":"Un día (日) que ya pasó de golpe. 乍 zhà ayuda con el sonido.","t":"","e":["昨天"],"a":"昨"},{"h":"有","p":"yǒu","s":"tener, haber","c":"𠂇 + 月","m":"Una mano (𠂇) que agarra un trozo de carne (月): tener.","t":"","e":["没有","有"],"a":"有"},{"h":"没","p":"méi","s":"no (tener)","c":"氵 + 殳","m":"Algo que se hundió en el agua: ya no está.","t":"","e":["没关系","没有"],"a":"没"},{"h":"几","p":"jǐ","s":"¿cuántos?","c":"2 trazos","m":"Una mesita baja con pocas cosas encima: ¿cuántas?","t":"","e":["几"],"a":"几"},{"h":"个","p":"gè","s":"clasificador general","c":"人 + 丨","m":"Un techito con un palo: una unidad.","t":"","e":["个"],"a":"个"},{"h":"岁","p":"suì","s":"años (de edad)","c":"山 + 夕","m":"Montañas (山) de noches (夕): los años que tienes.","t":"","e":["岁"],"a":"岁"},{"h":"名","p":"míng","s":"nombre","c":"夕 + 口","m":"De noche (夕) no te ven: tienen que decir tu nombre con la boca (口).","t":"","e":["名字"],"a":"名"},{"h":"宀","p":"mián","s":"techo (componente)","c":"丶 + 冖","m":"Un techo de casa. Lo que va debajo está dentro de casa.","t":"c","e":[],"a":null},{"h":"字","p":"zì","s":"carácter","c":"宀 + 子","m":"Un niño bajo techo aprendiendo caracteres.","t":"","e":["名字","字"],"a":"字"},{"h":"叫","p":"jiào","s":"llamar(se)","c":"口 + 丩","m":"Una boca que grita: llamar a alguien.","t":"","e":["叫"],"a":"叫"},{"h":"什","p":"shén","s":"(什么) qué","c":"亻 + 十","m":"Persona + diez: ¿qué es todo eso?","t":"","e":["什么"],"a":"神"},{"h":"么","p":"me","s":"(什么) qué","c":"丿 + 厶","m":"Pequeño y enroscado. Casi siempre va con 什 o 怎.","t":"","e":["什么","怎么","怎么样"],"a":"什么"},{"h":"讠","p":"yán","s":"palabra (componente)","c":"丶 + ㇊","m":"La forma corta de 言: todo lo que tiene que ver con hablar.","t":"c","e":[],"a":null},{"h":"谁","p":"shéi","s":"¿quién?","c":"讠 + 隹","m":"Palabras (讠) y un pájaro (隹): ¿quién está hablando?","t":"","e":["谁"],"a":"谁"},{"h":"那","p":"nà","s":"eso, aquel","c":"冄 + 阝","m":"阝 a la derecha es una ciudad: la de allá lejos.","t":"","e":["那"],"a":"纳"},{"h":"哪","p":"nǎ","s":"¿cuál?","c":"口 + 那","m":"Una boca que pregunta por «eso»: ¿cuál?","t":"","e":["哪","哪儿"],"a":"哪"},{"h":"这","p":"zhè","s":"esto, este","c":"文 + 辶","m":"Caminando (辶) hasta aquí: esto.","t":"","e":["这"],"a":"这"},{"h":"儿","p":"ér","s":"hijo; sufijo -r","c":"丿 + 乚","m":"Dos piernitas: un niño.","t":"","e":["儿子","哪儿","女儿"],"a":"而"},{"h":"土","p":"tǔ","s":"tierra","c":"十 + 一","m":"Un brote (十) que sale del suelo (一).","t":"","e":[],"a":"土"},{"h":"在","p":"zài","s":"estar en","c":"𠂇 + 丨 + 土","m":"Algo plantado en la tierra (土): estar ahí.","t":"","e":["现在","在"],"a":"在"},{"h":"家","p":"jiā","s":"casa, familia","c":"宀 + 豕","m":"Un techo con un cerdo (豕) debajo: así era una casa de campo.","t":"","e":["家"],"a":"家"},{"h":"爸","p":"bà","s":"papá","c":"父 + 巴","m":"Padre (父) + 巴 bā, que da el sonido.","t":"","e":["爸爸"],"a":"爸"},{"h":"妈","p":"mā","s":"mamá","c":"女 + 马","m":"Mujer + caballo (mǎ): «mā». 马 da el sonido.","t":"","e":["妈妈"],"a":"妈"},{"h":"工","p":"gōng","s":"trabajo","c":"一 + 丨 + 一","m":"Una regla de carpintero: herramienta de trabajo.","t":"","e":["工作"],"a":"工"},{"h":"作","p":"zuò","s":"hacer, obra","c":"亻 + 乍","m":"Una persona que se pone a hacer algo.","t":"","e":["工作"],"a":"作"},{"h":"生","p":"shēng","s":"nacer, vida","c":"𠂉 + 土","m":"Un brote que nace de la tierra (土).","t":"","e":["先生","学生","医生"],"a":"生"},{"h":"学","p":"xué","s":"estudiar","c":"⺍ + 冖 + 子","m":"Un niño (子) bajo techo con el conocimiento cayéndole encima.","t":"","e":["同学","学生","学习"],"a":"学"},{"h":"师","p":"shī","s":"maestro","c":"刂 + 帀","m":"La persona que te guía.","t":"","e":["老师"],"a":"师"},{"h":"老","p":"lǎo","s":"viejo","c":"耂 + 匕","m":"Un anciano encorvado con su bastón.","t":"","e":["老师"],"a":"老"},{"h":"医","p":"yī","s":"medicina","c":"匚 + 矢","m":"Una caja (匚) donde se guardan las flechas (矢): un botiquín.","t":"","e":["医生","医院"],"a":"医"},{"h":"阝","p":"fù","s":"colina, ciudad (componente)","c":"㇌ + 丨","m":"A la izquierda es una colina; a la derecha, una ciudad.","t":"c","e":[],"a":null},{"h":"院","p":"yuàn","s":"patio, institución","c":"阝 + 完","m":"Un recinto completo (完) junto a la colina: un hospital, un patio.","t":"","e":["医院"],"a":"院"},{"h":"习","p":"xí","s":"practicar","c":"𠃌 + 2 puntos","m":"Un ala de pájaro que practica volar.","t":"","e":["学习"],"a":"习"},{"h":"木","p":"mù","s":"árbol, madera","c":"十 + 八","m":"Un árbol: tronco, ramas y raíces.","t":"","e":[],"a":"木"},{"h":"校","p":"xiào","s":"escuela","c":"木 + 交","m":"Una casa de madera (木) donde la gente se reúne (交).","t":"","e":["学校"],"a":"笑"},{"h":"同","p":"tóng","s":"igual, juntos","c":"冂 + 一 + 口","m":"Todos bajo el mismo techo, hablando con la misma boca.","t":"","e":["同学"],"a":"同"},{"h":"先","p":"xiān","s":"primero","c":"⺧ + 儿","m":"Unas piernas (儿) que van delante.","t":"","e":["先生"],"a":"先"},{"h":"国","p":"guó","s":"país","c":"囗 + 玉","m":"Un tesoro (玉, jade) dentro de las fronteras (囗).","t":"","e":["中国"],"a":"国"},{"h":"京","p":"jīng","s":"capital","c":"亠 + 口 + 小","m":"Un edificio alto: la capital.","t":"","e":["北京"],"a":"京"},{"h":"北","p":"běi","s":"norte","c":"2 personas espalda con espalda","m":"Dos personas de espaldas: dan la espalda al frío del norte.","t":"","e":["北京"],"a":"北"},{"h":"又","p":"yòu","s":"otra vez; mano","c":"2 trazos","m":"Una mano. Como componente suele significar «mano».","t":"","e":[],"a":"又"},{"h":"汉","p":"hàn","s":"chino (etnia han)","c":"氵 + 又","m":"El río (氵) Han: de ahí viene el nombre.","t":"","e":["汉语"],"a":"汉"},{"h":"语","p":"yǔ","s":"idioma","c":"讠 + 吾","m":"Las palabras (讠) que yo (吾) hablo.","t":"","e":["汉语"],"a":"语"},{"h":"说","p":"shuō","s":"hablar, decir","c":"讠 + 兑","m":"Palabras (讠) que salen de una boca abierta (兑).","t":"","e":["说"],"a":"说"},{"h":"话","p":"huà","s":"palabras, habla","c":"讠 + 舌","m":"Palabras (讠) y lengua (舌).","t":"","e":["打电话"],"a":"话"},{"h":"认","p":"rèn","s":"reconocer","c":"讠 + 人","m":"Hablar (讠) con una persona (人) para reconocerla.","t":"","e":["认识"],"a":"认"},{"h":"识","p":"shí","s":"conocer","c":"讠 + 只","m":"Palabras (讠): con 认 forma 认识, conocer a alguien.","t":"","e":["认识"],"a":"十"},{"h":"朋","p":"péng","s":"amigo","c":"月 + 月","m":"Dos lunas iguales, lado a lado: amigos.","t":"","e":["朋友"],"a":"朋"},{"h":"友","p":"yǒu","s":"amigo","c":"𠂇 + 又","m":"Dos manos (𠂇 y 又) que se dan: amistad.","t":"","e":["朋友"],"a":"友"},{"h":"喜","p":"xǐ","s":"alegría","c":"壴 + 口","m":"Un tambor (壴) y una boca que canta: alegría.","t":"","e":["喜欢"],"a":"喜"},{"h":"欢","p":"huān","s":"alegre","c":"又 + 欠","m":"Una mano (又) y una boca abierta (欠): se ríe.","t":"","e":["喜欢"],"a":"欢"},{"h":"爱","p":"ài","s":"amar","c":"爫 + 冖 + 友","m":"Una mano (爫) que cubre (冖) al amigo (友).","t":"","e":["爱"],"a":"爱"},{"h":"心","p":"xīn","s":"corazón","c":"4 trazos","m":"Un corazón con sus gotas de sangre. Como componente: emociones y pensamiento.","t":"","e":[],"a":"心"},{"h":"目","p":"mù","s":"ojo","c":"5 trazos","m":"Un ojo puesto de pie.","t":"","e":[],"a":"目"},{"h":"想","p":"xiǎng","s":"pensar, querer","c":"相 + 心","m":"Ver (相 = 木 + 目) con el corazón (心): pensar en algo, desearlo.","t":"","e":["想"],"a":"想"},{"h":"会","p":"huì","s":"saber hacer","c":"人 + 云","m":"Una persona (人) con las ideas claras (云): sabe hacerlo.","t":"","e":["会"],"a":"慧"},{"h":"能","p":"néng","s":"poder","c":"厶 + 月 + 匕 匕","m":"En origen era un oso: fuerte, capaz.","t":"","e":["能"],"a":"能"},{"h":"看","p":"kàn","s":"mirar","c":"手 + 目","m":"Una mano (手) sobre el ojo (目) para mirar a lo lejos.","t":"","e":["看","看见"],"a":"看"},{"h":"见","p":"jiàn","s":"ver","c":"冂 + 儿","m":"Un ojo con piernas: ir a ver.","t":"","e":["看见","再见"],"a":"见"},{"h":"听","p":"tīng","s":"escuchar","c":"口 + 斤","m":"Boca (口): lo que dicen otros y tú oyes.","t":"","e":["听"],"a":"听"},{"h":"读","p":"dú","s":"leer","c":"讠 + 卖","m":"Palabras (讠) que se pregonan (卖) en voz alta: leer.","t":"","e":["读"],"a":"读"},{"h":"写","p":"xiě","s":"escribir","c":"冖 + 与","m":"La mano escribe bajo la tapa.","t":"","e":["写"],"a":"写"},{"h":"书","p":"shū","s":"libro","c":"4 trazos","m":"Un pincel que traza un libro.","t":"","e":["书"],"a":"书"},{"h":"本","p":"běn","s":"raíz; clasificador de libros","c":"木 + 一","m":"Un árbol (木) con una marca en la raíz.","t":"","e":["本"],"a":"本"},{"h":"吃","p":"chī","s":"comer","c":"口 + 乞","m":"Una boca (口) que pide comida (乞).","t":"","e":["吃"],"a":"吃"},{"h":"喝","p":"hē","s":"beber","c":"口 + 曷","m":"Una boca (口). 曷 hé da el sonido.","t":"","e":["喝"],"a":"喝"},{"h":"艹","p":"cǎo","s":"hierba (componente)","c":"3 trazos","m":"Hierba que brota: plantas, té, verduras.","t":"c","e":[],"a":null},{"h":"茶","p":"chá","s":"té","c":"艹 + 人 + 木","m":"Una persona (人) entre la hierba (艹) y el árbol (木): recoge té.","t":"","e":["茶"],"a":"茶"},{"h":"饣","p":"shí","s":"comida (componente)","c":"3 trazos","m":"La forma corta de 食, comida.","t":"c","e":[],"a":null},{"h":"饭","p":"fàn","s":"comida, arroz cocido","c":"饣 + 反","m":"Comida (饣). 反 fǎn da el sonido.","t":"","e":["饭店","米饭"],"a":"饭"},{"h":"米","p":"mǐ","s":"arroz (grano)","c":"6 trazos","m":"Granos de arroz que saltan en todas direcciones.","t":"","e":["米饭"],"a":"米"},{"h":"菜","p":"cài","s":"plato, verdura","c":"艹 + 采","m":"Hierbas (艹) que se recogen (采) para cocinar.","t":"","e":["菜"],"a":"菜"},{"h":"果","p":"guǒ","s":"fruta","c":"田 + 木","m":"Un fruto (田) colgando del árbol (木).","t":"","e":["苹果","水果"],"a":"果"},{"h":"苹","p":"píng","s":"(苹果) manzana","c":"艹 + 平","m":"Planta (艹). 平 píng da el sonido.","t":"","e":["苹果"],"a":"瓶"},{"h":"杯","p":"bēi","s":"vaso, taza","c":"木 + 不","m":"Antes los vasos eran de madera (木). 不 bù da un sonido parecido.","t":"","e":["杯子"],"a":"杯"},{"h":"来","p":"lái","s":"venir","c":"7 trazos","m":"Una espiga de trigo que vino del cielo.","t":"","e":["来"],"a":"来"},{"h":"去","p":"qù","s":"ir","c":"土 + 厶","m":"Salir de la tierra (土) propia: irse.","t":"","e":["去"],"a":"去"},{"h":"回","p":"huí","s":"volver","c":"囗 + 口","m":"Un cuadro dentro de otro: das la vuelta y regresas.","t":"","e":["回"],"a":"回"},{"h":"开","p":"kāi","s":"abrir","c":"一 + 廾","m":"Dos manos (廾) que levantan la tranca (一) de la puerta.","t":"","e":["开"],"a":"开"},{"h":"车","p":"chē","s":"coche","c":"4 trazos","m":"Un carro visto desde arriba: el eje y las ruedas.","t":"","e":["出租车"],"a":"车"},{"h":"出","p":"chū","s":"salir","c":"凵 + 凵 + 丨","m":"Un brote que sale dos veces de la tierra.","t":"","e":["出租车"],"a":"出"},{"h":"租","p":"zū","s":"alquilar","c":"禾 + 且","m":"Antes el alquiler se pagaba con grano (禾).","t":"","e":["出租车"],"a":"租"},{"h":"坐","p":"zuò","s":"sentarse","c":"人 人 + 土","m":"Dos personas (人 人) sentadas en el suelo (土).","t":"","e":["坐"],"a":"坐"},{"h":"住","p":"zhù","s":"vivir (en)","c":"亻 + 主","m":"Una persona (亻) que es dueña (主) de un lugar: vive ahí.","t":"","e":["住"],"a":"住"},{"h":"做","p":"zuò","s":"hacer","c":"亻 + 故","m":"Una persona (亻) haciendo algo.","t":"","e":["做"],"a":"做"},{"h":"扌","p":"shǒu","s":"mano (componente)","c":"3 trazos","m":"手 cuando va a la izquierda: acciones con las manos.","t":"c","e":[],"a":null},{"h":"打","p":"dǎ","s":"golpear; 打电话 llamar","c":"扌 + 丁","m":"Una mano (扌) que clava un clavo (丁).","t":"","e":["打电话"],"a":"打"},{"h":"电","p":"diàn","s":"electricidad","c":"日 + 乚","m":"Un rayo que cae de una nube.","t":"","e":["打电话","电脑","电视"],"a":"电"},{"h":"脑","p":"nǎo","s":"cerebro","c":"月 + 㐫","m":"Parte del cuerpo (月) llena de ideas: 电脑 es «cerebro eléctrico», el computador.","t":"","e":["电脑"],"a":"脑"},{"h":"视","p":"shì","s":"mirar","c":"礻 + 见","m":"Ver (见) con atención: 电视, televisión.","t":"","e":["电视"],"a":"视"},{"h":"影","p":"yǐng","s":"sombra, imagen","c":"景 + 彡","m":"Un paisaje (景) con rayos de luz (彡): sombras e imágenes. 电影 = película.","t":"","e":["电影"],"a":"影"},{"h":"飞","p":"fēi","s":"volar","c":"3 trazos","m":"Un ala y dos plumas en vuelo.","t":"","e":["飞机"],"a":"飞"},{"h":"机","p":"jī","s":"máquina","c":"木 + 几","m":"Madera (木) y una mesita (几): las primeras máquinas eran de madera.","t":"","e":["飞机"],"a":"机"},{"h":"东","p":"dōng","s":"este","c":"5 trazos","m":"El sol que sale detrás de un árbol: por el este.","t":"","e":["东西"],"a":"东"},{"h":"西","p":"xī","s":"oeste","c":"6 trazos","m":"Un pájaro en su nido al atardecer: el oeste. 东西 = cosa.","t":"","e":["东西"],"a":"西"},{"h":"买","p":"mǎi","s":"comprar","c":"乛 + 头","m":"Llevar la mercancía en la cabeza a casa.","t":"","e":["买"],"a":"买"},{"h":"钅","p":"jīn","s":"metal (componente)","c":"5 trazos","m":"La forma corta de 金, oro o metal.","t":"c","e":[],"a":null},{"h":"钱","p":"qián","s":"dinero","c":"钅 + 戋","m":"Metal (钅) en pedacitos: monedas.","t":"","e":["钱"],"a":"钱"},{"h":"块","p":"kuài","s":"trozo; yuan","c":"土 + 夬","m":"Un trozo de tierra (土). En la calle, 块 es el yuan.","t":"","e":["块"],"a":"块"},{"h":"商","p":"shāng","s":"comercio","c":"11 trazos","m":"Un puesto con su techo y su mostrador.","t":"","e":["商店"],"a":"商"},{"h":"店","p":"diàn","s":"tienda","c":"广 + 占","m":"Un local abierto (广) que ocupa (占) un sitio en la calle.","t":"","e":["饭店","商店"],"a":"店"},{"h":"多","p":"duō","s":"mucho","c":"夕 + 夕","m":"Noche tras noche (夕 夕): muchas.","t":"","e":["多","多少"],"a":"多"},{"h":"少","p":"shǎo","s":"poco","c":"小 + 丿","m":"Pequeño (小) y además le quitan un trozo: poco.","t":"","e":["多少","少"],"a":"少"},{"h":"衣","p":"yī","s":"ropa","c":"6 trazos","m":"Una túnica con su cuello y sus mangas.","t":"","e":["衣服"],"a":"衣"},{"h":"服","p":"fú","s":"ropa; servir","c":"月 + 𠬝","m":"Lo que se pone sobre el cuerpo (月). 衣服 = ropa.","t":"","e":["衣服"],"a":"服"},{"h":"漂","p":"piào","s":"(漂亮) bonito","c":"氵 + 票","m":"Agua (氵). 票 piào da el sonido.","t":"","e":["漂亮"],"a":"票"},{"h":"亮","p":"liàng","s":"brillante","c":"亠 + 口 + 冖 + 几","m":"Un edificio alto con la luz encendida.","t":"","e":["漂亮"],"a":"亮"},{"h":"高","p":"gāo","s":"alto","c":"10 trazos","m":"Una torre de varios pisos.","t":"","e":["高兴"],"a":"高"},{"h":"兴","p":"xìng","s":"ánimo, interés","c":"6 trazos","m":"Manos que levantan algo con entusiasmo. 高兴 = contento.","t":"","e":["高兴"],"a":"性"},{"h":"和","p":"hé","s":"y; armonía","c":"禾 + 口","m":"Grano (禾) en la boca (口): todos comen, hay paz.","t":"","e":["和"],"a":"河"},{"h":"都","p":"dōu","s":"todos","c":"者 + 阝","m":"Una ciudad (阝) donde están todos (者).","t":"","e":["都"],"a":"兜"},{"h":"很","p":"hěn","s":"muy","c":"彳 + 艮","m":"Paso (彳) firme: muy.","t":"","e":["很"],"a":"很"},{"h":"太","p":"tài","s":"demasiado","c":"大 + 丶","m":"Grande (大) y un poquito más: demasiado.","t":"","e":["太"],"a":"太"},{"h":"的","p":"de","s":"de (posesión)","c":"白 + 勺","m":"La partícula que más vas a usar: 我的 = mío.","t":"","e":["的"],"a":"我的"},{"h":"了","p":"le","s":"partícula de acción terminada","c":"2 trazos","m":"Un gancho que cierra la acción: ya está.","t":"","e":["了"],"a":"好了"},{"h":"灬","p":"huǒ","s":"fuego (componente)","c":"4 puntos","m":"Cuatro llamas debajo: fuego, calor.","t":"c","e":[],"a":null},{"h":"点","p":"diǎn","s":"punto; en punto (hora)","c":"占 + 灬","m":"Un punto quemado por el fuego (灬). 三点 = las tres.","t":"","e":["点","一点儿"],"a":"点"},{"h":"分","p":"fēn","s":"minuto; dividir","c":"八 + 刀","m":"Un cuchillo (刀) que separa (八) en partes.","t":"","e":["分钟"],"a":"分"},{"h":"钟","p":"zhōng","s":"reloj, campana","c":"钅 + 中","m":"Metal (钅). 中 zhōng da el sonido.","t":"","e":["分钟"],"a":"钟"},{"h":"时","p":"shí","s":"tiempo, hora","c":"日 + 寸","m":"El sol (日) medido en pulgadas (寸): la hora.","t":"","e":["时候"],"a":"时"},{"h":"候","p":"hòu","s":"(时候) momento","c":"亻 + 丨 + 侯","m":"Una persona que espera el momento.","t":"","e":["时候"],"a":"后"},{"h":"现","p":"xiàn","s":"ahora; aparecer","c":"王 + 见","m":"Ver (见) el jade (王) brillar: aparece ahora.","t":"","e":["现在"],"a":"现"},{"h":"午","p":"wǔ","s":"mediodía","c":"4 trazos","m":"Un poste a pleno sol que casi no da sombra: mediodía.","t":"","e":["上午","下午","中午"],"a":"午"},{"h":"星","p":"xīng","s":"estrella","c":"日 + 生","m":"Pequeños soles (日) que nacen (生) de noche.","t":"","e":["星期"],"a":"星"},{"h":"期","p":"qī","s":"periodo","c":"其 + 月","m":"Un ciclo de la luna (月): periodo. 星期 = semana.","t":"","e":["星期"],"a":"七"},{"h":"号","p":"hào","s":"número; día del mes","c":"口 + 丂","m":"Una boca (口) que canta el número.","t":"","e":["号"],"a":"号"},{"h":"前","p":"qián","s":"delante","c":"䒑 + 一 + 月 + 刂","m":"La proa de un barco que va delante.","t":"","e":["前面"],"a":"前"},{"h":"后","p":"hòu","s":"detrás","c":"6 trazos","m":"Lo que queda atrás.","t":"","e":["后面"],"a":"后"},{"h":"面","p":"miàn","s":"cara; lado","c":"9 trazos","m":"Una cara vista de frente con la nariz en medio.","t":"","e":["后面","前面"],"a":"面"},{"h":"里","p":"lǐ","s":"dentro","c":"田 + 土","m":"Un campo (田) en la tierra (土): dentro de la aldea.","t":"","e":["里"],"a":"里"},{"h":"冫","p":"bīng","s":"hielo (componente)","c":"2 puntos","m":"Dos gotas que se congelan: frío.","t":"c","e":[],"a":null},{"h":"冷","p":"lěng","s":"frío","c":"冫 + 令","m":"Hielo (冫). 令 lìng da el sonido.","t":"","e":["冷"],"a":"冷"},{"h":"热","p":"rè","s":"calor","c":"执 + 灬","m":"Fuego (灬) debajo: calor.","t":"","e":["热"],"a":"热"},{"h":"气","p":"qì","s":"aire, vapor","c":"4 trazos","m":"Capas de vapor que suben. 天气 = clima.","t":"","e":["不客气","天气"],"a":"气"},{"h":"雨","p":"yǔ","s":"lluvia","c":"8 trazos","m":"Gotas que caen bajo una nube.","t":"","e":["下雨"],"a":"雨"},{"h":"犭","p":"quǎn","s":"animal (componente)","c":"3 trazos","m":"La forma de 犬, perro: animales.","t":"c","e":[],"a":null},{"h":"狗","p":"gǒu","s":"perro","c":"犭 + 句","m":"Animal (犭). 句 da un sonido parecido.","t":"","e":["狗"],"a":"狗"},{"h":"猫","p":"māo","s":"gato","c":"犭 + 苗","m":"Animal (犭) + 苗 miáo: «miau».","t":"","e":["猫"],"a":"猫"},{"h":"椅","p":"yǐ","s":"silla","c":"木 + 奇","m":"De madera (木). 奇 da el sonido.","t":"","e":["椅子"],"a":"椅"},{"h":"桌","p":"zhuō","s":"mesa","c":"⺊ + 日 + 木","m":"Una tabla de madera (木) alta.","t":"","e":["桌子"],"a":"桌"},{"h":"谢","p":"xiè","s":"agradecer","c":"讠 + 射","m":"Palabras (讠) que lanzas (射) a otro: gracias.","t":"","e":["谢谢"],"a":"谢"},{"h":"对","p":"duì","s":"correcto; frente a","c":"又 + 寸","m":"Dos manos (又, 寸) que encajan: correcto.","t":"","e":["对不起"],"a":"对"},{"h":"起","p":"qǐ","s":"levantarse","c":"走 + 己","m":"Uno mismo (己) se pone a andar (走): levantarse.","t":"","e":["对不起"],"a":"起"},{"h":"客","p":"kè","s":"invitado","c":"宀 + 各","m":"Cada uno (各) que llega bajo tu techo (宀): un invitado.","t":"","e":["不客气"],"a":"客"},{"h":"关","p":"guān","s":"cerrar; relación","c":"䒑 + 天","m":"Una puerta trancada. 关系 = relación.","t":"","e":["没关系"],"a":"关"},{"h":"系","p":"xì","s":"sistema; relación","c":"丿 + 糸","m":"Hilos (糸) que se atan: relación.","t":"","e":["没关系"],"a":"细"},{"h":"再","p":"zài","s":"otra vez","c":"6 trazos","m":"Una cosa puesta encima de otra: otra vez. 再见 = adiós.","t":"","e":["再见"],"a":"再"},{"h":"请","p":"qǐng","s":"por favor","c":"讠 + 青","m":"Palabras (讠) limpias (青): por favor.","t":"","e":["请"],"a":"请"},{"h":"喂","p":"wèi","s":"¿aló?","c":"口 + 畏","m":"Una boca (口). 畏 wèi da el sonido.","t":"","e":["喂"],"a":"胃"},{"h":"些","p":"xiē","s":"algunos","c":"此 + 二","m":"Esto (此) y un par más: algunos.","t":"","e":["些"],"a":"些"},{"h":"怎","p":"zěn","s":"¿cómo?","c":"乍 + 心","m":"El corazón (心) que se pregunta de repente: ¿cómo?","t":"","e":["怎么","怎么样"],"a":"怎"},{"h":"样","p":"yàng","s":"forma, manera","c":"木 + 羊","m":"Madera (木) y oveja (羊): el modelo de algo.","t":"","e":["怎么样"],"a":"样"},{"h":"姐","p":"jiě","s":"hermana mayor","c":"女 + 且","m":"Mujer (女). 且 da el sonido.","t":"","e":["小姐"],"a":"姐"},{"h":"睡","p":"shuì","s":"dormir","c":"目 + 垂","m":"Los ojos (目) que se caen (垂): sueño.","t":"","e":["睡觉"],"a":"睡"},{"h":"觉","p":"jiào","s":"sueño (睡觉)","c":"⺍ + 冖 + 见","m":"Ver (见) con los ojos cerrados: soñar.","t":"","e":["睡觉"],"a":"叫"},{"h":"零","p":"líng","s":"cero","c":"雨 + 令","m":"Gotas de lluvia (雨) que caen sueltas: cero.","t":"","e":["零"],"a":"零"}],"palabras":[{"h":"爱","p":"ài","s":"amar","t":"4","a":"爱"},{"h":"八","p":"bā","s":"ocho","t":"1","a":"八"},{"h":"爸爸","p":"bàba","s":"papá","t":"4-0","a":"爸爸"},{"h":"杯子","p":"bēizi","s":"vaso, taza","t":"1-0","a":"杯子"},{"h":"北京","p":"Běijīng","s":"Pekín","t":"3-1","a":"北京"},{"h":"本","p":"běn","s":"clasificador de libros","t":"3","a":"本"},{"h":"不","p":"bù","s":"no","t":"4","a":"不"},{"h":"不客气","p":"bú kèqi","s":"de nada","t":"2-4-0","a":"不客气"},{"h":"菜","p":"cài","s":"plato, verdura","t":"4","a":"菜"},{"h":"茶","p":"chá","s":"té","t":"2","a":"茶"},{"h":"吃","p":"chī","s":"comer","t":"1","a":"吃"},{"h":"出租车","p":"chūzūchē","s":"taxi","t":"1-1-1","a":"出租车"},{"h":"打电话","p":"dǎ diànhuà","s":"llamar por teléfono","t":"3-4-4","a":"打电话"},{"h":"大","p":"dà","s":"grande","t":"4","a":"大"},{"h":"的","p":"de","s":"partícula de posesión («de»)","t":"0","a":"我的"},{"h":"点","p":"diǎn","s":"en punto (hora)","t":"3","a":"点"},{"h":"电脑","p":"diànnǎo","s":"computador","t":"4-3","a":"电脑"},{"h":"电视","p":"diànshì","s":"televisión","t":"4-4","a":"电视"},{"h":"电影","p":"diànyǐng","s":"película","t":"4-3","a":"电影"},{"h":"东西","p":"dōngxi","s":"cosa","t":"1-0","a":"东西"},{"h":"都","p":"dōu","s":"todos, ambos","t":"1","a":"兜"},{"h":"读","p":"dú","s":"leer","t":"2","a":"读"},{"h":"对不起","p":"duìbuqǐ","s":"perdón","t":"4-0-3","a":"对不起"},{"h":"多","p":"duō","s":"mucho","t":"1","a":"多"},{"h":"多少","p":"duōshao","s":"cuánto","t":"1-0","a":"多少"},{"h":"儿子","p":"érzi","s":"hijo","t":"2-0","a":"儿子"},{"h":"二","p":"èr","s":"dos","t":"4","a":"二"},{"h":"饭店","p":"fàndiàn","s":"restaurante, hotel","t":"4-4","a":"饭店"},{"h":"飞机","p":"fēijī","s":"avión","t":"1-1","a":"飞机"},{"h":"分钟","p":"fēnzhōng","s":"minuto","t":"1-1","a":"分钟"},{"h":"高兴","p":"gāoxìng","s":"contento","t":"1-4","a":"高兴"},{"h":"个","p":"gè","s":"clasificador general","t":"4","a":"个"},{"h":"工作","p":"gōngzuò","s":"trabajar, trabajo","t":"1-4","a":"工作"},{"h":"狗","p":"gǒu","s":"perro","t":"3","a":"狗"},{"h":"汉语","p":"Hànyǔ","s":"idioma chino","t":"4-3","a":"汉语"},{"h":"好","p":"hǎo","s":"bien, bueno","t":"3","a":"好"},{"h":"号","p":"hào","s":"día del mes, número","t":"4","a":"号"},{"h":"喝","p":"hē","s":"beber","t":"1","a":"喝"},{"h":"和","p":"hé","s":"y","t":"2","a":"河"},{"h":"很","p":"hěn","s":"muy","t":"3","a":"很"},{"h":"后面","p":"hòumiàn","s":"detrás","t":"4-4","a":"后面"},{"h":"回","p":"huí","s":"volver","t":"2","a":"回"},{"h":"会","p":"huì","s":"saber hacer","t":"4","a":"慧"},{"h":"几","p":"jǐ","s":"cuántos (pocos)","t":"3","a":"几"},{"h":"家","p":"jiā","s":"casa, familia","t":"1","a":"家"},{"h":"叫","p":"jiào","s":"llamarse, llamar","t":"4","a":"叫"},{"h":"今天","p":"jīntiān","s":"hoy","t":"1-1","a":"今天"},{"h":"九","p":"jiǔ","s":"nueve","t":"3","a":"九"},{"h":"开","p":"kāi","s":"abrir, conducir","t":"1","a":"开"},{"h":"看","p":"kàn","s":"mirar","t":"4","a":"看"},{"h":"看见","p":"kànjiàn","s":"ver","t":"4-4","a":"看见"},{"h":"块","p":"kuài","s":"yuan (dinero)","t":"4","a":"块"},{"h":"来","p":"lái","s":"venir","t":"2","a":"来"},{"h":"老师","p":"lǎoshī","s":"profesor","t":"3-1","a":"老师"},{"h":"了","p":"le","s":"partícula de acción terminada","t":"0","a":"好了"},{"h":"冷","p":"lěng","s":"frío","t":"3","a":"冷"},{"h":"里","p":"lǐ","s":"dentro","t":"3","a":"里"},{"h":"零","p":"líng","s":"cero","t":"2","a":"零"},{"h":"六","p":"liù","s":"seis","t":"4","a":"六"},{"h":"妈妈","p":"māma","s":"mamá","t":"1-0","a":"妈妈"},{"h":"吗","p":"ma","s":"partícula de pregunta","t":"0","a":"好吗"},{"h":"买","p":"mǎi","s":"comprar","t":"3","a":"买"},{"h":"猫","p":"māo","s":"gato","t":"1","a":"猫"},{"h":"没关系","p":"méi guānxi","s":"no importa","t":"2-1-0","a":"没关系"},{"h":"没有","p":"méiyǒu","s":"no tener, no haber","t":"2-3","a":"没有"},{"h":"米饭","p":"mǐfàn","s":"arroz cocido","t":"3-4","a":"米饭"},{"h":"名字","p":"míngzi","s":"nombre","t":"2-0","a":"名字"},{"h":"明天","p":"míngtiān","s":"mañana (día)","t":"2-1","a":"明天"},{"h":"哪","p":"nǎ","s":"cuál","t":"3","a":"哪"},{"h":"哪儿","p":"nǎr","s":"dónde","t":null,"a":"哪儿"},{"h":"那","p":"nà","s":"eso, aquel","t":"4","a":"纳"},{"h":"呢","p":"ne","s":"¿y…? (partícula)","t":"0","a":"你呢"},{"h":"能","p":"néng","s":"poder","t":"2","a":"能"},{"h":"你","p":"nǐ","s":"tú","t":"3","a":"你"},{"h":"年","p":"nián","s":"año","t":"2","a":"年"},{"h":"女儿","p":"nǚ'ér","s":"hija","t":"3-2","a":"女儿"},{"h":"朋友","p":"péngyou","s":"amigo","t":"2-0","a":"朋友"},{"h":"漂亮","p":"piàoliang","s":"bonito","t":"4-0","a":"漂亮"},{"h":"苹果","p":"píngguǒ","s":"manzana","t":"2-3","a":"苹果"},{"h":"七","p":"qī","s":"siete","t":"1","a":"七"},{"h":"前面","p":"qiánmiàn","s":"delante","t":"2-4","a":"前面"},{"h":"钱","p":"qián","s":"dinero","t":"2","a":"钱"},{"h":"请","p":"qǐng","s":"por favor, invitar","t":"3","a":"请"},{"h":"去","p":"qù","s":"ir","t":"4","a":"去"},{"h":"热","p":"rè","s":"calor","t":"4","a":"热"},{"h":"人","p":"rén","s":"persona","t":"2","a":"人"},{"h":"认识","p":"rènshi","s":"conocer (a alguien)","t":"4-0","a":"认识"},{"h":"三","p":"sān","s":"tres","t":"1","a":"三"},{"h":"商店","p":"shāngdiàn","s":"tienda","t":"1-4","a":"商店"},{"h":"上","p":"shàng","s":"arriba, subir","t":"4","a":"上"},{"h":"上午","p":"shàngwǔ","s":"por la mañana","t":"4-3","a":"上午"},{"h":"少","p":"shǎo","s":"poco","t":"3","a":"少"},{"h":"谁","p":"shéi","s":"quién","t":"2","a":"谁"},{"h":"什么","p":"shénme","s":"qué","t":"2-0","a":"什么"},{"h":"十","p":"shí","s":"diez","t":"2","a":"十"},{"h":"时候","p":"shíhou","s":"momento, cuando","t":"2-0","a":"时候"},{"h":"是","p":"shì","s":"ser","t":"4","a":"是"},{"h":"书","p":"shū","s":"libro","t":"1","a":"书"},{"h":"水","p":"shuǐ","s":"agua","t":"3","a":"水"},{"h":"水果","p":"shuǐguǒ","s":"fruta","t":"3-3","a":"水果"},{"h":"睡觉","p":"shuìjiào","s":"dormir","t":"4-4","a":"睡觉"},{"h":"说","p":"shuō","s":"hablar, decir","t":"1","a":"说"},{"h":"四","p":"sì","s":"cuatro","t":"4","a":"四"},{"h":"岁","p":"suì","s":"años (de edad)","t":"4","a":"岁"},{"h":"他","p":"tā","s":"él","t":"1","a":"他"},{"h":"她","p":"tā","s":"ella","t":"1","a":"她"},{"h":"太","p":"tài","s":"demasiado","t":"4","a":"太"},{"h":"天气","p":"tiānqì","s":"clima","t":"1-4","a":"天气"},{"h":"听","p":"tīng","s":"escuchar","t":"1","a":"听"},{"h":"同学","p":"tóngxué","s":"compañero de clase","t":"2-2","a":"同学"},{"h":"喂","p":"wèi","s":"¿aló?","t":"4","a":"胃"},{"h":"我","p":"wǒ","s":"yo","t":"3","a":"我"},{"h":"我们","p":"wǒmen","s":"nosotros","t":"3-0","a":"我们"},{"h":"五","p":"wǔ","s":"cinco","t":"3","a":"五"},{"h":"喜欢","p":"xǐhuan","s":"gustar","t":"3-0","a":"喜欢"},{"h":"下","p":"xià","s":"abajo, bajar","t":"4","a":"下"},{"h":"下午","p":"xiàwǔ","s":"por la tarde","t":"4-3","a":"下午"},{"h":"下雨","p":"xià yǔ","s":"llover","t":"4-3","a":"下雨"},{"h":"先生","p":"xiānsheng","s":"señor","t":"1-0","a":"先生"},{"h":"现在","p":"xiànzài","s":"ahora","t":"4-4","a":"现在"},{"h":"想","p":"xiǎng","s":"querer, pensar","t":"3","a":"想"},{"h":"小","p":"xiǎo","s":"pequeño","t":"3","a":"小"},{"h":"小姐","p":"xiǎojiě","s":"señorita","t":"3-3","a":"小姐"},{"h":"些","p":"xiē","s":"algunos","t":"1","a":"些"},{"h":"写","p":"xiě","s":"escribir","t":"3","a":"写"},{"h":"谢谢","p":"xièxie","s":"gracias","t":"4-0","a":"谢谢"},{"h":"星期","p":"xīngqī","s":"semana","t":"1-1","a":"星期"},{"h":"学生","p":"xuésheng","s":"estudiante","t":"2-0","a":"学生"},{"h":"学习","p":"xuéxí","s":"estudiar","t":"2-2","a":"学习"},{"h":"学校","p":"xuéxiào","s":"escuela","t":"2-4","a":"学校"},{"h":"一","p":"yī","s":"uno","t":"1","a":"一"},{"h":"一点儿","p":"yìdiǎnr","s":"un poco","t":null,"a":"一点儿"},{"h":"衣服","p":"yīfu","s":"ropa","t":"1-0","a":"衣服"},{"h":"医生","p":"yīshēng","s":"médico","t":"1-1","a":"医生"},{"h":"医院","p":"yīyuàn","s":"hospital","t":"1-4","a":"医院"},{"h":"椅子","p":"yǐzi","s":"silla","t":"3-0","a":"椅子"},{"h":"有","p":"yǒu","s":"tener, haber","t":"3","a":"有"},{"h":"月","p":"yuè","s":"mes, luna","t":"4","a":"月"},{"h":"在","p":"zài","s":"estar en","t":"4","a":"在"},{"h":"再见","p":"zàijiàn","s":"adiós","t":"4-4","a":"再见"},{"h":"怎么","p":"zěnme","s":"cómo","t":"3-0","a":"怎么"},{"h":"怎么样","p":"zěnmeyàng","s":"¿qué tal?","t":"3-0-4","a":"怎么样"},{"h":"这","p":"zhè","s":"esto, este","t":"4","a":"这"},{"h":"中国","p":"Zhōngguó","s":"China","t":"1-2","a":"中国"},{"h":"中午","p":"zhōngwǔ","s":"mediodía","t":"1-3","a":"中午"},{"h":"住","p":"zhù","s":"vivir (en un lugar)","t":"4","a":"住"},{"h":"桌子","p":"zhuōzi","s":"mesa","t":"1-0","a":"桌子"},{"h":"字","p":"zì","s":"carácter","t":"4","a":"字"},{"h":"昨天","p":"zuótiān","s":"ayer","t":"2-1","a":"昨天"},{"h":"坐","p":"zuò","s":"sentarse, ir en","t":"4","a":"坐"},{"h":"做","p":"zuò","s":"hacer","t":"4","a":"做"}],"cuartetos":[{"b":"ma","h":["妈","麻","马","骂"]},{"b":"yi","h":["衣","姨","椅","意"]},{"b":"ba","h":["八","拔","把","爸"]},{"b":"ying","h":["英","迎","影","硬"]},{"b":"shi","h":["诗","十","使","是"]},{"b":"tang","h":["汤","糖","躺","烫"]},{"b":"fei","h":["飞","肥","匪","费"]},{"b":"tong","h":["通","同","桶","痛"]},{"b":"guo","h":["锅","国","果","过"]},{"b":"fu","h":["夫","扶","斧","父"]},{"b":"hu","h":["呼","湖","虎","户"]},{"b":"da","h":["搭","答","打","大"]},{"b":"mi","h":["眯","迷","米","蜜"]},{"b":"qi","h":["七","骑","起","气"]},{"b":"xiang","h":["香","详","想","象"]}],"lecturas":[{"id":"l01","orden":1,"titulo":"Hola","nivel":"Semana 1","lineas":[{"h":"你好！","p":"Nǐ hǎo!","s":"¡Hola!"},{"h":"我好，你好，他好，她好。","p":"Wǒ hǎo, nǐ hǎo, tā hǎo, tā hǎo.","s":"Yo bien, tú bien, él bien, ella bien."},{"h":"我们好吗？","p":"Wǒmen hǎo ma?","s":"¿Estamos bien?"},{"h":"一、二、三、四、五……","p":"Yī, èr, sān, sì, wǔ…","s":"Uno, dos, tres, cuatro, cinco…"},{"h":"六、七、八、九、十！","p":"Liù, qī, bā, jiǔ, shí!","s":"¡Seis, siete, ocho, nueve, diez!"},{"h":"他是中国人吗？不是。","p":"Tā shì Zhōngguó rén ma? Bú shì.","s":"¿Él es chino? No."},{"h":"她呢？她是中国人。","p":"Tā ne? Tā shì Zhōngguó rén.","s":"¿Y ella? Ella es china."}],"glosas":[{"h":"国","p":"guó","s":"país (中国 = China)"}]},{"id":"l02","orden":2,"titulo":"¿Cómo te llamas?","nivel":"Semana 2","lineas":[{"h":"你好！我叫 Jhon。","p":"Nǐ hǎo! Wǒ jiào Jhon.","s":"¡Hola! Me llamo Jhon."},{"h":"你叫什么名字？","p":"Nǐ jiào shénme míngzi?","s":"¿Cómo te llamas?"},{"h":"我叫小月。","p":"Wǒ jiào Xiǎo Yuè.","s":"Me llamo Xiao Yue."},{"h":"小月，你今年几岁？","p":"Xiǎo Yuè, nǐ jīnnián jǐ suì?","s":"Xiao Yue, ¿cuántos años tienes este año?"},{"h":"我今年九岁。你呢？","p":"Wǒ jīnnián jiǔ suì. Nǐ ne?","s":"Este año tengo nueve. ¿Y tú?"},{"h":"我？我不说！","p":"Wǒ? Wǒ bù shuō!","s":"¿Yo? ¡No lo digo!"}],"glosas":[{"h":"说","p":"shuō","s":"decir"}]},{"id":"l03","orden":3,"titulo":"Mi casa","nivel":"Semana 2","lineas":[{"h":"这是我家。","p":"Zhè shì wǒ jiā.","s":"Esta es mi casa."},{"h":"我家有三个人：爸爸、妈妈和我。","p":"Wǒ jiā yǒu sān ge rén: bàba, māma hé wǒ.","s":"En mi casa somos tres: papá, mamá y yo."},{"h":"我家也有一只猫。","p":"Wǒ jiā yě yǒu yì zhī māo.","s":"En mi casa también hay un gato."},{"h":"我的猫叫苹果。","p":"Wǒ de māo jiào Píngguǒ.","s":"Mi gato se llama Manzana."},{"h":"今天爸爸在家，妈妈不在家。","p":"Jīntiān bàba zài jiā, māma bú zài jiā.","s":"Hoy papá está en casa; mamá no."},{"h":"苹果呢？苹果在哪儿？","p":"Píngguǒ ne? Píngguǒ zài nǎr?","s":"¿Y Manzana? ¿Dónde está Manzana?"}],"glosas":[{"h":"和","p":"hé","s":"y"},{"h":"也","p":"yě","s":"también"},{"h":"只","p":"zhī","s":"clasificador de animales"},{"h":"猫","p":"māo","s":"gato"},{"h":"的","p":"de","s":"de (mi)"},{"h":"苹果","p":"píngguǒ","s":"manzana"}]},{"id":"l04","orden":4,"titulo":"Estudio chino","nivel":"Semana 3","lineas":[{"h":"我是学生吗？不是，我工作。","p":"Wǒ shì xuésheng ma? Bú shì, wǒ gōngzuò.","s":"¿Soy estudiante? No, trabajo."},{"h":"我在学习汉语。","p":"Wǒ zài xuéxí Hànyǔ.","s":"Estoy estudiando chino."},{"h":"我的老师是中国人。","p":"Wǒ de lǎoshī shì Zhōngguó rén.","s":"Mi profesor es chino."},{"h":"他是北京人。","p":"Tā shì Běijīng rén.","s":"Es de Pekín."},{"h":"我会说一点儿汉语。","p":"Wǒ huì shuō yìdiǎnr Hànyǔ.","s":"Sé hablar un poco de chino."},{"h":"你认识我的老师吗？","p":"Nǐ rènshi wǒ de lǎoshī ma?","s":"¿Conoces a mi profesor?"}],"glosas":[{"h":"的","p":"de","s":"de (mi)"},{"h":"会","p":"huì","s":"saber hacer"},{"h":"一点儿","p":"yìdiǎnr","s":"un poco"}]},{"id":"l05","orden":5,"titulo":"¿Qué le gusta a Manzana?","nivel":"Semana 4","lineas":[{"h":"苹果是我的猫。","p":"Píngguǒ shì wǒ de māo.","s":"Manzana es mi gato."},{"h":"它喜欢吃米饭吗？不喜欢。","p":"Tā xǐhuan chī mǐfàn ma? Bù xǐhuan.","s":"¿Le gusta comer arroz? No."},{"h":"它喜欢喝水。","p":"Tā xǐhuan hē shuǐ.","s":"Le gusta beber agua."},{"h":"它也喜欢看我写汉字。","p":"Tā yě xǐhuan kàn wǒ xiě Hànzì.","s":"También le gusta verme escribir caracteres."},{"h":"我想看书，它想睡觉。","p":"Wǒ xiǎng kàn shū, tā xiǎng shuìjiào.","s":"Yo quiero leer; él quiere dormir."},{"h":"我爱我的猫。","p":"Wǒ ài wǒ de māo.","s":"Quiero a mi gato."}],"glosas":[{"h":"它","p":"tā","s":"él/ella (animal o cosa)"},{"h":"也","p":"yě","s":"también"},{"h":"的","p":"de","s":"de (mi)"},{"h":"猫","p":"māo","s":"gato"},{"h":"睡觉","p":"shuìjiào","s":"dormir"}]}],"audio":{"一":"a/d274eee8a1.mp3","二":"a/1d5639f716.mp3","三":"a/49ddb069d5.mp3","十":"a/aa107f05b6.mp3","人":"a/4912771a42.mp3","口":"a/1e7b07e714.mp3","大":"a/0889c34972.mp3","小":"a/922517cc73.mp3","中":"a/0869071c92.mp3","日":"a/15917f3b32.mp3","月":"a/d9b59879f3.mp3","水":"a/8ffbf19293.mp3","女":"a/26bc84961c.mp3","紫":"a/01caea5810.mp3","好":"a/27e4fe4c3f.mp3","四":"a/4f88740b34.mp3","五":"a/8f07f53d63.mp3","六":"a/3d72c724e0.mp3","七":"a/7db1eeb5c3.mp3","八":"a/2142fb62fd.mp3","九":"a/27a2b9f17b.mp3","你":"a/5630b886f9.mp3","我":"a/34f201bc50.mp3","他":"a/e31b569a0f.mp3","她":"a/7f2fa5ddbe.mp3","门":"a/57b3e13562.mp3","我们":"a/0805949359.mp3","不":"a/8fa7401e90.mp3","是":"a/30160a21b9.mp3","马":"a/7d39044ed6.mp3","好吗":"a/9a916229ea.mp3","你呢":"a/498838e59d.mp3","上":"a/b967ce841a.mp3","下":"a/a6caf2effb.mp3","天":"a/c3304d1e49.mp3","今":"a/d2130d70a0.mp3","年":"a/6f14c2641c.mp3","明":"a/fca811d4f0.mp3","昨":"a/8f0005d18f.mp3","有":"a/fbd5b75066.mp3","没":"a/ca0bc5e27c.mp3","几":"a/68bf29eb00.mp3","个":"a/f7b2a6ee68.mp3","岁":"a/86f13375c1.mp3","名":"a/81d4aecdad.mp3","字":"a/582c50066c.mp3","叫":"a/793f8679d7.mp3","神":"a/87a94db45b.mp3","什么":"a/1d57c0fe68.mp3","谁":"a/f0ef38a883.mp3","纳":"a/7f218e27e6.mp3","哪":"a/cd963c6bfd.mp3","这":"a/542523173c.mp3","而":"a/fca82746e8.mp3","土":"a/90fbc9b1ac.mp3","在":"a/686b703f41.mp3","家":"a/7de8177ce7.mp3","爸":"a/a732e56e22.mp3","妈":"a/e3918a99aa.mp3","工":"a/a26028c019.mp3","作":"a/e8555020c4.mp3","生":"a/3eb31f888c.mp3","学":"a/7c7a06f0ea.mp3","师":"a/021a21d909.mp3","老":"a/4b6e3ccb72.mp3","医":"a/67426806bc.mp3","院":"a/ead69987e3.mp3","习":"a/b047fcdc80.mp3","木":"a/8294db3a20.mp3","笑":"a/740d1fff9c.mp3","同":"a/0b8b919983.mp3","先":"a/82d45ef210.mp3","国":"a/f4bba5643a.mp3","京":"a/812aba4f00.mp3","北":"a/48c1462231.mp3","又":"a/4c2b677cfd.mp3","汉":"a/8be87291bd.mp3","语":"a/21c857be01.mp3","说":"a/be3058692f.mp3","话":"a/9160ee4e87.mp3","认":"a/416342fbf3.mp3","朋":"a/01fd270dc7.mp3","友":"a/6cca7a3ec0.mp3","喜":"a/d21b4e3093.mp3","欢":"a/7be144783c.mp3","爱":"a/7b8ef4b58a.mp3","心":"a/481e547b1a.mp3","目":"a/3a0ea34a22.mp3","想":"a/a48f3ad06d.mp3","慧":"a/b7611899b5.mp3","能":"a/7321380d3c.mp3","看":"a/5f386ebdbb.mp3","见":"a/d65fa821b0.mp3","听":"a/1e358ba2b7.mp3","读":"a/d001fffdd2.mp3","写":"a/144d2cba11.mp3","书":"a/fe04274cef.mp3","本":"a/d3cc0cab9c.mp3","吃":"a/a10d4d5a63.mp3","喝":"a/9982c5ced1.mp3","茶":"a/97a08c17dc.mp3","饭":"a/cded745e11.mp3","米":"a/ee7f305751.mp3","菜":"a/7b4bb888fb.mp3","果":"a/d62c08d357.mp3","瓶":"a/2332d349e7.mp3","杯":"a/2535fb0654.mp3","来":"a/4b1d6193e4.mp3","去":"a/033fd274f0.mp3","回":"a/5b722ab415.mp3","开":"a/b4217093bc.mp3","车":"a/7c852e1d83.mp3","出":"a/69e859b290.mp3","租":"a/5d00753a30.mp3","坐":"a/4a1e3b19fa.mp3","住":"a/80b84acecf.mp3","做":"a/715fb2c0ef.mp3","打":"a/6919d5be90.mp3","电":"a/9a0508dd1d.mp3","脑":"a/99fc575d7c.mp3","视":"a/f1f8b774f4.mp3","影":"a/ed29e09cb0.mp3","飞":"a/322b8afdf9.mp3","机":"a/0d73d884a9.mp3","东":"a/520b46a5cd.mp3","西":"a/2f64b5a67e.mp3","买":"a/b6c5a7139f.mp3","钱":"a/db4be61875.mp3","块":"a/e44b48e089.mp3","商":"a/2ce413903b.mp3","店":"a/22df192e24.mp3","多":"a/451b1366af.mp3","少":"a/fa495b65bd.mp3","衣":"a/cb6d358425.mp3","服":"a/b5140a9fc3.mp3","票":"a/e7965fd28e.mp3","亮":"a/caf3447b27.mp3","高":"a/b096b3f5ac.mp3","性":"a/6dc93688a0.mp3","河":"a/2aa34a2124.mp3","兜":"a/9730211354.mp3","很":"a/74a04cc4bf.mp3","太":"a/d2ff8f7020.mp3","我的":"a/a82c993d73.mp3","好了":"a/fac14ac621.mp3","点":"a/1d59ea7cbb.mp3","分":"a/0d7416e2e2.mp3","钟":"a/9923d64a20.mp3","时":"a/a34801ad9c.mp3","后":"a/7b55d5a1d4.mp3","现":"a/e22afee112.mp3","午":"a/66571b614d.mp3","星":"a/92ae747cc7.mp3","号":"a/7f5716be5c.mp3","前":"a/073d852840.mp3","面":"a/4dfa006d75.mp3","里":"a/c5a8f40bc0.mp3","冷":"a/e2fc60d070.mp3","热":"a/1aff05b636.mp3","气":"a/b08d2c770a.mp3","雨":"a/8995b89799.mp3","狗":"a/2fcbe72fbf.mp3","猫":"a/e10bd9f09b.mp3","椅":"a/618be2726b.mp3","桌":"a/c4a493bcda.mp3","谢":"a/b27c6fd4c5.mp3","对":"a/02b83ec7cc.mp3","起":"a/29195326fd.mp3","客":"a/1d9eee0cf2.mp3","关":"a/a3332f1c94.mp3","细":"a/6a002d62cc.mp3","再":"a/95fd8be0d9.mp3","请":"a/18f5d6e11c.mp3","胃":"a/da97a97eba.mp3","些":"a/468cbbc2c4.mp3","怎":"a/0448a9d839.mp3","样":"a/e7a0cc5d37.mp3","姐":"a/a151a26775.mp3","睡":"a/c14905ca86.mp3","零":"a/e0d763a9ee.mp3","爸爸":"a/c86d164500.mp3","杯子":"a/a49c409448.mp3","北京":"a/685e151824.mp3","不客气":"a/bbc044d7ea.mp3","出租车":"a/14534d703d.mp3","打电话":"a/aab40b7634.mp3","电脑":"a/ec87a4b867.mp3","电视":"a/3258138d98.mp3","电影":"a/ba723f5f1d.mp3","东西":"a/949fb2e914.mp3","对不起":"a/0e5fd9ee90.mp3","多少":"a/6c999d484a.mp3","儿子":"a/7b47d70bc7.mp3","饭店":"a/f8a8f08b22.mp3","飞机":"a/0cb0206b42.mp3","分钟":"a/28bf227b9b.mp3","高兴":"a/a9bd182d2e.mp3","工作":"a/dd9fc2c0a1.mp3","汉语":"a/ae341b1780.mp3","后面":"a/67404b82a6.mp3","今天":"a/17e83cc25e.mp3","看见":"a/7fd3df7ebc.mp3","老师":"a/494f23d624.mp3","妈妈":"a/7d3b2b0ebc.mp3","没关系":"a/df96e37ca4.mp3","没有":"a/8dcff1ebe3.mp3","米饭":"a/0b0e3a35bf.mp3","名字":"a/364bd1bf05.mp3","明天":"a/b76ce230d3.mp3","哪儿":"a/dce81b4475.mp3","女儿":"a/310c28d318.mp3","朋友":"a/d490b5fd60.mp3","漂亮":"a/9c7fd1442d.mp3","苹果":"a/b38d961e70.mp3","前面":"a/9c61cc16a8.mp3","认识":"a/b79cb26e1c.mp3","商店":"a/83eff41a2e.mp3","上午":"a/e214ee22dd.mp3","时候":"a/dd26b2b687.mp3","水果":"a/c4bed30f02.mp3","睡觉":"a/6380260a65.mp3","天气":"a/6055fe4b90.mp3","同学":"a/c560c19c26.mp3","喜欢":"a/28aa475a79.mp3","下午":"a/1dfaab6548.mp3","下雨":"a/b94ed83e39.mp3","先生":"a/a6e9f6d970.mp3","现在":"a/a511e8442f.mp3","小姐":"a/82b78f7fa3.mp3","谢谢":"a/3d43bc74a6.mp3","星期":"a/e35269378d.mp3","学生":"a/b76783d38c.mp3","学习":"a/aa89dd63b3.mp3","学校":"a/08610a85a1.mp3","一点儿":"a/b34e4ca734.mp3","衣服":"a/2e34963bf8.mp3","医生":"a/552caeb5bd.mp3","医院":"a/41deb73412.mp3","椅子":"a/9d08e4010f.mp3","再见":"a/82202bb725.mp3","怎么":"a/6f409884bb.mp3","怎么样":"a/91e31a915f.mp3","中国":"a/101806f57c.mp3","中午":"a/0c5382c1db.mp3","桌子":"a/22b263f45c.mp3","昨天":"a/59c4fcb09e.mp3","麻":"a/433ea2216f.mp3","骂":"a/6343706870.mp3","姨":"a/620e3674e5.mp3","意":"a/9d197986e0.mp3","拔":"a/737c389c6b.mp3","把":"a/b3ba7814f4.mp3","英":"a/c7acd3b00e.mp3","迎":"a/5bfa3226ee.mp3","硬":"a/32709a595a.mp3","诗":"a/53e00f750c.mp3","使":"a/f6901ca318.mp3","汤":"a/fc4ef67147.mp3","糖":"a/3d8cd510d0.mp3","躺":"a/a85402d565.mp3","烫":"a/700ef0f34f.mp3","肥":"a/e650f32008.mp3","匪":"a/78c1a1967a.mp3","费":"a/f07ab143e8.mp3","通":"a/bef21932fe.mp3","桶":"a/46bcef0347.mp3","痛":"a/335a309cd8.mp3","锅":"a/bab87d54bb.mp3","过":"a/e19e218cd9.mp3","夫":"a/79b38a8ca7.mp3","扶":"a/5d4cf9d07c.mp3","斧":"a/57c80d18d9.mp3","父":"a/0b27d61a07.mp3","呼":"a/5869cdd322.mp3","湖":"a/58c2d9447c.mp3","虎":"a/e3b6f39a04.mp3","户":"a/3a7c88e33d.mp3","搭":"a/59c77cf6a9.mp3","答":"a/8bc965a1ed.mp3","眯":"a/839720b80c.mp3","迷":"a/2ee73fb7ae.mp3","蜜":"a/8c6ec3d998.mp3","骑":"a/c058471d3b.mp3","香":"a/7ba41552d7.mp3","详":"a/1e9df6a3e9.mp3","象":"a/85e5e0a822.mp3","你好！":"a/3faa70ab61.mp3","我好，你好，他好，她好。":"a/7af8899bcd.mp3","我们好吗？":"a/43ca3af457.mp3","一、二、三、四、五……":"a/f8a9e07ed6.mp3","六、七、八、九、十！":"a/7e54c7cf16.mp3","他是中国人吗？不是。":"a/76ac5c76fd.mp3","她呢？她是中国人。":"a/bf882f4e0a.mp3","你好！我叫 Jhon。":"a/f587ccc211.mp3","你叫什么名字？":"a/be97f872b2.mp3","我叫小月。":"a/088bb138db.mp3","小月，你今年几岁？":"a/ac20dd4a29.mp3","我今年九岁。你呢？":"a/b228fafb0f.mp3","我？我不说！":"a/33b57b4a40.mp3","这是我家。":"a/7bcbbfdb48.mp3","我家有三个人：爸爸、妈妈和我。":"a/7a645cb031.mp3","我家也有一只猫。":"a/3e7130c53e.mp3","我的猫叫苹果。":"a/fe9f3877a6.mp3","今天爸爸在家，妈妈不在家。":"a/bbb736c291.mp3","苹果呢？苹果在哪儿？":"a/b5bc12e93e.mp3","我是学生吗？不是，我工作。":"a/93fdb3ea90.mp3","我在学习汉语。":"a/dc4e3e0ef2.mp3","我的老师是中国人。":"a/278465f72c.mp3","他是北京人。":"a/fb6b90237e.mp3","我会说一点儿汉语。":"a/c0b42fa61a.mp3","你认识我的老师吗？":"a/3406da7b64.mp3","苹果是我的猫。":"a/4e1343297f.mp3","它喜欢吃米饭吗？不喜欢。":"a/80a8329bda.mp3","它喜欢喝水。":"a/3a05dc6ce0.mp3","它也喜欢看我写汉字。":"a/300246e147.mp3","我想看书，它想睡觉。":"a/06e73db9f3.mp3","我爱我的猫。":"a/99346a9a77.mp3"}};
+const CH = D.caracteres;
+const POR_H = Object.fromEntries(CH.map(c => [c.h, c]));
+const API = "https://cuaderno-hanzi.jhonsaavedrau.workers.dev";
+const DIAS_TOTAL = 67; // el plan: 9 semanas y media desde el primer día de cada persona
+const INTERVALOS = [0, 1, 3, 7, 14, 30, 60, 120];
+const $ = (s, el = document) => el.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+/* ---------- Fechas ---------- */
+function fechaLocal(d = new Date()) {
+  return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+}
+function difDias(a, b) { return Math.round((new Date(b + "T12:00") - new Date(a + "T12:00")) / 864e5); }
+function sumaDias(f, n) { const d = new Date(f + "T12:00"); d.setDate(d.getDate() + n); return fechaLocal(d); }
+function medianoche(f) { return new Date(f + "T00:00").getTime(); }
+const HOY = () => fechaLocal();
+const INICIO = () => S.inicio || HOY();
+const FIN = () => sumaDias(INICIO(), DIAS_TOTAL - 1);
+const numDia = () => Math.max(1, difDias(INICIO(), HOY()) + 1);
+const MESES = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
+const DSEM = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"];
+function fechaLarga(f) { const d = new Date(f + "T12:00"); return `${DSEM[d.getDay()]} ${d.getDate()} de ${MESES[d.getMonth()]}`; }
+function fase(n) {
+  if (n <= 7) return "Semana 1 · Pinyin, tonos y primeros trazos";
+  if (n <= 42) return `Semana ${Math.ceil(n / 7)} · Vocabulario del HSK 1`;
+  return `Semana ${Math.min(10, Math.ceil(n / 7))} · Parte del HSK 2 y lecturas más largas`;
+}
+
+/* ---------- Estado y guardado ---------- */
+const CLAVE = "cuaderno-hanzi-v1";
+function estadoVacio() { return { v: 1, t: 0, inicio: null, porDia: 5, guia: 0, cartas: {}, dias: {}, lecturas: {} }; }
+let S = estadoVacio();
+
+/* Sesión: usuario + PIN contra el servidor; el avance se guarda en el
+   navegador al instante y se sube al servidor a los pocos segundos. */
+let SESION = null;
+try { SESION = JSON.parse(localStorage.getItem(CLAVE + "-sesion")); } catch (e) {}
+const claveLocal = () => CLAVE + "-" + (SESION ? SESION.usuario : "anon");
+function cargarLocal() {
+  S = estadoVacio();
+  try { const g = JSON.parse(localStorage.getItem(claveLocal())); if (g && g.v === 1) S = Object.assign(estadoVacio(), g); } catch (e) {}
+  if (!S.inicio) S.inicio = HOY();
+}
+async function api(ruta, opciones = {}) {
+  const r = await fetch(API + ruta, Object.assign({}, opciones, {
+    headers: Object.assign({ "Content-Type": "application/json" }, SESION ? { Authorization: "Bearer " + SESION.token } : {}),
+  }));
+  let d = null;
+  try { d = await r.json(); } catch (e) {}
+  if (r.status === 401 && d && d.error === "sin_sesion" && SESION) { cerrarSesion(); }
+  if (!r.ok) { const e = new Error((d && d.error) || "red"); e.codigo = d && d.error; e.datos = d || {}; throw e; }
+  return d;
+}
+
+let guardando = false, sucio = false, temporizador = null;
+function guardar() {
+  S.t = Date.now();
+  try { localStorage.setItem(claveLocal(), JSON.stringify(S)); } catch (e) {}
+  sucio = true;
+  clearTimeout(temporizador);
+  temporizador = setTimeout(subir, 1200);
+}
+async function subir() {
+  if (!SESION || guardando || !sucio) return;
+  guardando = true; sucio = false;
+  try { await api("/progreso", { method: "PUT", body: JSON.stringify({ estado: S }) }); marcaSync("Guardado"); }
+  catch (e) { sucio = true; marcaSync("Sin conexión: se guarda al volver"); }
+  finally { guardando = false; if (sucio) temporizador = setTimeout(subir, 8000); }
+}
+function marcaSync(t) { $("#m-sync").textContent = t; }
+async function traerNube() {
+  if (!SESION || guardando || sucio) return;
+  try {
+    const r = await api("/progreso");
+    if (r.estado && (r.t || 0) > (S.t || 0)) {
+      S = Object.assign(estadoVacio(), r.estado);
+      if (!S.inicio) S.inicio = HOY();
+      try { localStorage.setItem(claveLocal(), JSON.stringify(S)); } catch (e) {}
+      repintar();
+    } else if ((S.t || 0) > (r.t || 0)) { sucio = true; subir(); }
+    marcaSync("Guardado");
+  } catch (e) { marcaSync("Sin conexión"); }
+}
+function registroDia(f = HOY()) { return S.dias[f] || (S.dias[f] = { rep: 0, nue: 0, ton: 0, tonOk: 0, lec: 0, fr: 0, b: {} }); }
+function marcarBloque(b) { registroDia().b[b] = 1; guardar(); }
+
+/* ---------- Tarjetas (repaso espaciado) ---------- */
+const aprendidos = () => CH.filter(c => S.cartas[c.h]);
+const porAprender = () => CH.filter(c => !S.cartas[c.h]);
+function vencimiento(i) { return i === 0 ? Date.now() + 10 * 60e3 : medianoche(sumaDias(HOY(), INTERVALOS[i])); }
+function nuevaCarta(h) {
+  S.cartas[h] = { a: Date.now(), e: { i: 1, v: vencimiento(1) }, r: { i: 1, v: vencimiento(1) }, f: 0 };
+  registroDia().nue++;
+  guardar();
+}
+function calificar(h, tipo, ok) {
+  const c = S.cartas[h]; if (!c) return;
+  const k = c[tipo];
+  if (ok) k.i = Math.min(k.i + 1, INTERVALOS.length - 1);
+  else { k.i = 0; c.f = (c.f || 0) + 1; }
+  k.v = vencimiento(k.i);
+  registroDia().rep++;
+  guardar();
+}
+function pendientes() {
+  const ahora = Date.now(), cola = [];
+  for (const c of aprendidos()) {
+    const k = S.cartas[c.h];
+    if (k.e.v <= ahora) cola.push({ h: c.h, tipo: "e" });
+  }
+  for (const c of aprendidos()) {
+    const k = S.cartas[c.h];
+    if (k.r.v <= ahora && c.t !== "c") cola.push({ h: c.h, tipo: "r" });
+  }
+  return cola;
+}
+const fuerza = h => { const c = S.cartas[h]; return c ? Math.min(c.e.i, c.r.i) : -1; };
+const palabrasConocidas = () => D.palabras.filter(p => [...p.h].every(ch => S.cartas[ch]));
+
+/* ---------- Audio ---------- */
+const audios = {};
+let audioActual = null;
+function sonar(texto, alTerminar) {
+  const f = D.audio[texto];
+  if (!f) { hablar(texto, alTerminar); return; }
+  if (audioActual) { audioActual.pause(); audioActual.onended = null; }
+  const a = audios[f] || (audios[f] = new Audio(f));
+  audioActual = a;
+  a.currentTime = 0;
+  a.onended = () => alTerminar && alTerminar();
+  a.play().catch(() => hablar(texto, alTerminar));
+}
+function hablar(t, alTerminar) {
+  try {
+    const u = new SpeechSynthesisUtterance(t); u.lang = "zh-CN"; u.rate = .8;
+    u.onend = () => alTerminar && alTerminar();
+    speechSynthesis.cancel(); speechSynthesis.speak(u);
+  } catch (e) { alTerminar && alTerminar(); }
+}
+const ICONO_ALT = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
+function botonAudio(texto, etiqueta = "Escuchar") {
+  if (!texto) return "";
+  return `<button class="altavoz" data-audio="${esc(texto)}" aria-label="${esc(etiqueta)}">${ICONO_ALT}</button>`;
+}
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-audio]");
+  if (b) { e.stopPropagation(); sonar(b.dataset.audio); }
+});
+
+/* ---------- Hanzi Writer ---------- */
+let TRAZOS = null;
+const trazosListos = fetch("trazos.json").then(r => r.json()).then(j => (TRAZOS = j));
+function cargador(ch, listo, error) {
+  trazosListos.then(() => TRAZOS[ch] ? listo(TRAZOS[ch]) : error(new Error("Sin trazos para " + ch))).catch(error);
+}
+const tok = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const GRID = '<svg class="grid" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><g stroke="var(--cuadricula)" stroke-width=".5" stroke-dasharray="2 2" fill="none"><path d="M50 0V100M0 50H100M0 0L100 100M100 0L0 100"/></g></svg>';
+function lienzo(el, h, opciones = {}) {
+  el.innerHTML = `<div class="lienzo">${GRID}<div class="hw"></div></div>`;
+  const caja = $(".lienzo", el);
+  const lado = Math.floor(caja.getBoundingClientRect().width) || 300;
+  return HanziWriter.create($(".hw", caja), h, Object.assign({
+    width: lado, height: lado, padding: Math.round(lado * .07),
+    charDataLoader: cargador,
+    strokeColor: tok("--tinta"), radicalColor: tok("--bermellon"),
+    outlineColor: tok("--contorno"), drawingColor: tok("--tinta"),
+    highlightColor: tok("--bermellon"), drawingWidth: Math.max(18, Math.round(lado / 16)),
+    strokeAnimationSpeed: 1, delayBetweenStrokes: 280, showCharacter: false, showOutline: true,
+  }, opciones));
+}
+/* Lanza el ejercicio de trazar. modo: "calca" (con contorno) o "memoria" (sin nada). */
+function ejercicio(el, h, modo, alTerminar) {
+  const caja = document.createElement("div");
+  const estado = document.createElement("p");
+  estado.className = "estado-quiz";
+  estado.textContent = modo === "calca" ? "Traza encima del contorno, en orden." : "Escríbelo de memoria. Tras 3 fallos en un trazo te doy una pista.";
+  el.replaceChildren(caja, estado);
+  const w = lienzo(caja, h, { showOutline: modo === "calca" });
+  let ayuda = false;
+  w.quiz({
+    showHintAfterMisses: modo === "calca" ? 1 : 3,
+    leniency: 1.15,
+    onMistake: d => {
+      estado.className = "estado-quiz mal";
+      estado.textContent = d.mistakesOnStroke >= 3 ? "Mira la pista que parpadea." : "Ese trazo no va así. Prueba otra vez.";
+      if (d.mistakesOnStroke >= 3) ayuda = true;
+    },
+    onCorrectStroke: d => { estado.className = "estado-quiz"; estado.textContent = `Trazo ${d.strokeNum + 1} de ${d.strokeNum + 1 + d.strokesRemaining}`; },
+    onComplete: r => {
+      const ok = r.totalMistakes <= 2 && !ayuda;
+      estado.className = "estado-quiz " + (ok ? "ok" : "mal");
+      estado.textContent = ok ? (r.totalMistakes ? `Bien, con ${r.totalMistakes} error${r.totalMistakes > 1 ? "es" : ""}.` : "Perfecto.") : `Terminado con ${r.totalMistakes} errores. Vuelve a salir pronto.`;
+      alTerminar && alTerminar({ ok, errores: r.totalMistakes });
+    },
+  });
+  return w;
+}
+
+/* ---------- Navegación ---------- */
+let vistaActual = "hoy";
+function ir(v) {
+  vistaActual = v;
+  document.querySelectorAll(".vista").forEach(s => (s.hidden = s.id !== "v-" + v));
+  document.querySelectorAll(".tab").forEach(t => { if (t.dataset.v === v) t.setAttribute("aria-current", "page"); else t.removeAttribute("aria-current"); });
+  pintar(v);
+  window.scrollTo(0, 0);
+  try { localStorage.setItem(CLAVE + "-vista", v); } catch (e) {}
+}
+document.querySelectorAll(".tab").forEach(t => t.addEventListener("click", () => ir(t.dataset.v)));
+function pintar(v) {
+  ({ hoy: pintarHoy, escribir: pintarEscribir, tonos: pintarTonos, leer: pintarLeer, avance: pintarAvance, guia: pintarGuia })[v]();
+}
+function repintar() { if (!sesionActiva) pintar(vistaActual); }
+let sesionActiva = false;
+
+/* ---------- HOY ---------- */
+const BLOQUES = [
+  { id: "repaso", t: "Repaso", min: 10 },
+  { id: "nuevos", t: "Caracteres nuevos", min: 15 },
+  { id: "tonos", t: "Tonos", min: 8 },
+  { id: "leer", t: "Lectura y escucha", min: 12 },
+  { id: "frases", t: "Escribe tus frases", min: 5 },
+];
+function detalleBloque(id) {
+  const r = registroDia();
+  if (id === "repaso") { const n = pendientes().length; return aprendidos().length ? (n ? `${n} tarjeta${n > 1 ? "s" : ""} para hoy, primero las de escribir` : "Nada pendiente: todo al día") : "Empieza mañana, cuando tengas caracteres aprendidos"; }
+  if (id === "nuevos" && esDomingo() && !r.nue) return "Domingo: sin nuevos. Repasa y descansa la mano";
+  if (id === "nuevos") { const q = Math.max(0, S.porDia - r.nue), sig = porAprender().slice(0, q || S.porDia).map(c => c.h).join(" "); return r.nue >= S.porDia ? `Hoy aprendiste ${r.nue}. Puedes sumar más si quieres` : `${q} nuevos: ${sig}`; }
+  if (id === "tonos") return aprendidos().length < 30 ? "10 preguntas: sílabas sueltas" : "10 preguntas: sílabas y palabras que ya sabes";
+  if (id === "leer") { const l = lecturaDeHoy(); return l ? `«${l.titulo}». Escucha, lee y repite en voz alta` : "La primera lectura se abre cuando sepas unos 30 caracteres. Hoy: escucha las palabras que ya sabes"; }
+  if (id === "frases") return aprendidos().length < 15 ? "Con lo que sabes: escribe números y saludos" : "2 o 3 frases con lo de hoy. El corrector te las revisa";
+}
+function pintarHoy() {
+  sesionActiva = false;
+  const n = numDia(), r = registroDia(), el = $("#v-hoy");
+  const hechos = BLOQUES.filter(b => r.b[b.id]).length;
+  const siguiente = BLOQUES.find(b => !r.b[b.id] && !(b.id === "repaso" && !pendientes().length));
+  const antes = HOY() < INICIO();
+  el.innerHTML = `
+    <div class="dia">
+      <span class="etq">${esc(fechaLarga(HOY()))}</span>
+      <div class="grande num">${antes ? "Mañana" : "Día " + n} <small>${antes ? "empiezas" : "de " + DIAS_TOTAL}</small></div>
+      <span class="etq">${esc(fase(n))}</span>
+    </div>
+    ${n <= 3 && !S.guia ? `<div class="nota"><b>Antes de tu primera sesión</b>, lee la guía: cómo suena el pinyin, los 4 tonos y las reglas de los trazos. Son 10 minutos.<div class="btns" style="margin-top:10px"><button class="btn rojo" id="b-guia">Abrir la guía</button></div></div>` : ""}
+    <ol class="bloques">
+      ${BLOQUES.map((b, i) => {
+        const hecho = r.b[b.id], ahora = siguiente && siguiente.id === b.id;
+        return `<li><button class="bloque ${hecho ? "hecho" : ""}" data-b="${b.id}">
+          <span class="n num">${String(i + 1).padStart(2, "0")}</span>
+          <span class="q"><b>${b.t}</b><span>${esc(detalleBloque(b.id))}</span></span>
+          <span class="chip ${hecho ? "hecho" : ahora ? "ahora" : ""}">${hecho ? "Hecho" : b.min + " min"}</span>
+        </button></li>`;
+      }).join("")}
+    </ol>
+    <div class="btns">
+      ${siguiente ? `<button class="btn pri ancho" id="b-seguir">${hechos ? "Seguir" : "Empezar la sesión"}: ${siguiente.t}</button>` : `<p class="nota"><b>Sesión de hoy completa.</b> Mañana te esperan los repasos. Si te sobra energía, repasa en Escribir o vuelve a escuchar una lectura.</p>`}
+    </div>
+    <p class="aviso">Cuaderno 田字格 al lado: cada carácter nuevo, 3 veces de memoria. Los domingos no hay caracteres nuevos: repaso, prueba corta y me cuentas cómo vas.</p>`;
+  el.querySelectorAll("[data-b]").forEach(b => b.addEventListener("click", () => abrirBloque(b.dataset.b)));
+  $("#b-seguir", el)?.addEventListener("click", () => abrirBloque(siguiente.id));
+  $("#b-guia", el)?.addEventListener("click", () => ir("guia"));
+}
+function abrirBloque(id) {
+  sesionActiva = true;
+  const el = $("#v-hoy");
+  el.innerHTML = `<button class="volver" id="b-volver">← Plan de hoy</button><div class="panel" id="panel"></div>`;
+  $("#b-volver").addEventListener("click", () => { detenerTodo(); pintarHoy(); });
+  const panel = $("#panel");
+  const fin = () => { marcarBloque(id); pintarHoy(); window.scrollTo(0, 0); };
+  ({ repaso: blqRepaso, nuevos: blqNuevos, tonos: blqTonos, leer: blqLeer, frases: blqFrases })[id](panel, fin);
+  window.scrollTo(0, 0);
+}
+let escritorActual = null;
+function detenerTodo() {
+  try { escritorActual && escritorActual.cancelQuiz && escritorActual.cancelQuiz(); } catch (e) {}
+  if (audioActual) audioActual.pause();
+}
+const cabecera = (titulo, etq, frac) => `<div class="paso"><h2>${titulo}</h2><span class="etq num">${etq}</span></div><div class="barra"><i style="width:${Math.round(frac * 100)}%"></i></div>`;
+
+/* Bloque 1: repaso */
+function blqRepaso(panel, fin) {
+  const cola = pendientes();
+  if (!cola.length) {
+    panel.innerHTML = `${cabecera("Repaso", "0 pendientes", 1)}<p class="vacio">${aprendidos().length ? "No te toca repasar nada ahora. Las tarjetas vuelven justo antes de que se te olviden." : "Todavía no tienes caracteres aprendidos. Empieza por los caracteres nuevos."}</p><div class="btns"><button class="btn pri" id="b-fin">Marcar como hecho</button></div>`;
+    $("#b-fin").addEventListener("click", fin);
+    return;
+  }
+  let i = 0;
+  const total = cola.length;
+  const siguiente = () => {
+    if (i >= cola.length) { panel.innerHTML = `${cabecera("Repaso", `${total} de ${total}`, 1)}<p class="nota"><b>Repaso terminado.</b> Lo que fallaste vuelve en 10 minutos.</p><div class="btns"><button class="btn pri" id="b-fin">Siguiente bloque</button></div>`; $("#b-fin").addEventListener("click", fin); return; }
+    const { h, tipo } = cola[i++];
+    const c = POR_H[h];
+    if (tipo === "e") tarjetaEscribir(panel, c, `${i} de ${total}`, i / total, ok => { calificar(h, "e", ok); siguiente(); });
+    else tarjetaReconocer(panel, c, `${i} de ${total}`, i / total, ok => { calificar(h, "r", ok); siguiente(); });
+  };
+  siguiente();
+}
+function tarjetaEscribir(panel, c, etq, frac, listo) {
+  panel.innerHTML = `${cabecera("Escríbelo", etq, frac)}
+    <div class="pista"><span class="py">${esc(c.p)}</span><span class="sig">${esc(c.s)}</span>${c.a ? `<div>${botonAudio(c.a)}</div>` : ""}</div>
+    <div id="zona"></div>
+    <div class="btns" id="acc"><button class="btn sec ancho" id="b-nose">No me acuerdo</button></div>`;
+  let terminado = false;
+  escritorActual = ejercicio($("#zona"), c.h, "memoria", r => {
+    terminado = true;
+    $("#acc").innerHTML = `<button class="btn pri ancho" id="b-sig">Siguiente</button>`;
+    $("#b-sig").addEventListener("click", () => listo(r.ok));
+  });
+  $("#b-nose").addEventListener("click", () => {
+    if (terminado) return;
+    detenerTodo();
+    const zona = $("#zona");
+    zona.innerHTML = `<p class="mnemo">${esc(c.m)}</p><div id="anim"></div>`;
+    const w = lienzo($("#anim"), c.h, { showOutline: true });
+    w.animateCharacter({ onComplete: () => {
+      $("#acc").innerHTML = `<button class="btn pri ancho" id="b-calca">Ahora cálcalo</button>`;
+      $("#b-calca").addEventListener("click", () => {
+        escritorActual = ejercicio(zona, c.h, "calca", () => {
+          $("#acc").innerHTML = `<button class="btn pri ancho" id="b-sig">Siguiente</button>`;
+          $("#b-sig").addEventListener("click", () => listo(false));
+        });
+        $("#acc").innerHTML = "";
+      });
+    } });
+    $("#acc").innerHTML = "";
+  });
+}
+function tarjetaReconocer(panel, c, etq, frac, listo) {
+  panel.innerHTML = `${cabecera("¿Qué es?", etq, frac)}
+    <div class="carta"><span class="hz-g">${esc(c.h)}</span><div class="resp" id="resp" hidden>
+      <span class="py" style="font:600 26px var(--texto)">${esc(c.p)}</span><span>${esc(c.s)}</span>${c.a ? botonAudio(c.a) : ""}</div></div>
+    <p class="aviso" id="instr">Di en voz alta el pinyin y el significado. Luego compruébalo.</p>
+    <div class="btns" id="acc"><button class="btn pri ancho" id="b-ver">Mostrar</button></div>`;
+  $("#b-ver").addEventListener("click", () => {
+    $("#resp").hidden = false; $("#instr").hidden = true;
+    if (c.a) sonar(c.a);
+    $("#acc").innerHTML = `<button class="btn sec ancho" id="b-mal">No lo sabía</button><button class="btn pri ancho" id="b-bien">Lo sabía</button>`;
+    $("#b-mal").addEventListener("click", () => listo(false));
+    $("#b-bien").addEventListener("click", () => listo(true));
+  });
+}
+
+/* Bloque 2: caracteres nuevos */
+function fichaHTML(c) {
+  const ejemplos = c.e.map(h => D.palabras.find(p => p.h === h)).filter(Boolean);
+  return `<div class="ficha"><span class="hz-g">${esc(c.h)}</span>
+      <span class="py">${esc(c.p)} ${c.a ? botonAudio(c.a) : ""}</span>
+      <span class="sig">${esc(c.s)}</span>
+      <span class="comp">${c.t === "c" ? "COMPONENTE · " : ""}${esc(c.c)}</span></div>
+    <p class="mnemo">${esc(c.m)}</p>
+    ${ejemplos.length ? `<div class="ejemplos">${ejemplos.map(p => `<button class="ej" data-audio="${esc(p.a)}"><span class="hz">${esc(p.h)}</span><span class="p">${esc(p.p)}</span><span class="s">${esc(p.s)}</span><span class="mini-alt">▶</span></button>`).join("")}</div>` : ""}`;
+}
+const esDomingo = () => new Date().getDay() === 0;
+function blqNuevos(panel, fin, aunqueDomingo = false) {
+  const r = registroDia();
+  if (esDomingo() && !r.nue && !aunqueDomingo) {
+    panel.innerHTML = `${cabecera("Domingo", "Sin nuevos", 1)}<p class="nota"><b>Hoy no hay caracteres nuevos.</b> Haz el repaso, recorre el mapa de caracteres en Avance y escribe de memoria los que veas más débiles. Después cuéntame cómo te fue la semana.</p>
+      <div class="btns"><button class="btn sec" id="b-igual">Aprender ${S.porDia} igual</button><button class="btn pri" id="b-fin">Siguiente bloque</button></div>`;
+    $("#b-fin").addEventListener("click", fin);
+    $("#b-igual").addEventListener("click", () => blqNuevos(panel, fin, true));
+    return;
+  }
+  let lote = porAprender().slice(0, Math.max(0, S.porDia - r.nue));
+  if (!lote.length) {
+    const quedan = porAprender().length;
+    panel.innerHTML = `${cabecera("Caracteres nuevos", "Hoy: hecho", 1)}<p class="vacio">${quedan ? `Ya aprendiste ${r.nue} hoy. Si tienes energía, suma ${Math.min(S.porDia, quedan)} más; si no, lo importante es repasar.` : "Terminaste todos los caracteres del HSK 1. Pídeme la tanda del HSK 2."}</p>
+      <div class="btns">${quedan ? `<button class="btn sec" id="b-mas">Aprender ${Math.min(S.porDia, quedan)} más</button>` : ""}<button class="btn pri" id="b-fin">Siguiente bloque</button></div>`;
+    $("#b-fin").addEventListener("click", fin);
+    $("#b-mas")?.addEventListener("click", () => { lote = porAprender().slice(0, S.porDia); flujo(); });
+    return;
+  }
+  flujo();
+  function flujo() {
+    let k = 0;
+    const aprendidosHoy = [];
+    const total = lote.length;
+    const uno = () => {
+      if (k >= total) return relampago();
+      const c = lote[k];
+      const etq = `${k + 1} de ${total}`;
+      // Paso 1: conocerlo
+      panel.innerHTML = `${cabecera("Conócelo", etq, (k + .1) / total)}${fichaHTML(c)}<div id="anim"></div>
+        <div class="btns"><button class="btn sec" id="b-rep">Repetir animación</button><button class="btn pri ancho" id="b-calca">Calcarlo</button></div>`;
+      if (c.a) setTimeout(() => sonar(c.a), 250);
+      const w = lienzo($("#anim"), c.h, { showOutline: true });
+      w.animateCharacter();
+      $("#b-rep").addEventListener("click", () => w.animateCharacter());
+      $("#b-calca").addEventListener("click", calcar);
+      function calcar() {
+        panel.innerHTML = `${cabecera("Cálcalo", etq, (k + .4) / total)}<div class="pista"><span class="py">${esc(c.p)}</span><span class="sig">${esc(c.s)}</span></div><div id="zona"></div><div class="btns" id="acc"></div>`;
+        escritorActual = ejercicio($("#zona"), c.h, "calca", () => {
+          $("#acc").innerHTML = `<button class="btn pri ancho" id="b-m">De memoria</button>`;
+          $("#b-m").addEventListener("click", () => memoria(1));
+        });
+      }
+      function memoria(vez) {
+        panel.innerHTML = `${cabecera(`De memoria · ${vez} de 2`, etq, (k + .5 + vez * .2) / total)}<div class="pista"><span class="py">${esc(c.p)}</span><span class="sig">${esc(c.s)}</span></div><div id="zona"></div><div class="btns" id="acc"></div>`;
+        escritorActual = ejercicio($("#zona"), c.h, "memoria", () => {
+          $("#acc").innerHTML = vez < 2 ? `<button class="btn pri ancho" id="b-m">Otra vez, de memoria</button>` : `<button class="btn pri ancho" id="b-m">Al cuaderno</button>`;
+          $("#b-m").addEventListener("click", () => vez < 2 ? memoria(2) : cuaderno());
+        });
+      }
+      function cuaderno() {
+        panel.innerHTML = `${cabecera("En tu cuaderno", etq, (k + 1) / total)}
+          <div class="carta"><span class="hz-g">${esc(c.h)}</span><span>${esc(c.p)} · ${esc(c.s)}</span></div>
+          <p class="nota"><b>Escríbelo 3 veces en el 田字格.</b> Mira el carácter, tápalo y escríbelo sin mirar. Si dudas en un trazo, vuelve a la animación, pero no copies.</p>
+          <div class="btns"><button class="btn pri ancho" id="b-ok">Hecho, ${k + 1 < total ? "siguiente" : "terminar"}</button></div>`;
+        $("#b-ok").addEventListener("click", () => { nuevaCarta(c.h); aprendidosHoy.push(c); k++; uno(); });
+      }
+    };
+    // Al final, todos los de hoy otra vez de memoria y en otro orden
+    const relampago = () => {
+      const orden = [...aprendidosHoy].sort(() => Math.random() - .5);
+      let j = 0;
+      const sig = () => {
+        if (j >= orden.length) {
+          panel.innerHTML = `${cabecera("Listo", `${orden.length} nuevos`, 1)}<p class="nota"><b>Aprendiste ${orden.map(c => c.h).join(" ")}.</b> Mañana vuelven en el repaso.</p><div class="btns"><button class="btn pri" id="b-fin">Siguiente bloque</button></div>`;
+          $("#b-fin").addEventListener("click", fin);
+          return;
+        }
+        const c = orden[j++];
+        panel.innerHTML = `${cabecera("Repaso relámpago", `${j} de ${orden.length}`, j / orden.length)}<div class="pista"><span class="py">${esc(c.p)}</span><span class="sig">${esc(c.s)}</span></div><div id="zona"></div><div class="btns" id="acc"></div>`;
+        escritorActual = ejercicio($("#zona"), c.h, "memoria", r => {
+          if (!r.ok) calificar(c.h, "e", false);
+          $("#acc").innerHTML = `<button class="btn pri ancho" id="b-s">Siguiente</button>`;
+          $("#b-s").addEventListener("click", sig);
+        });
+      };
+      sig();
+    };
+    uno();
+  }
+}
+
+/* Bloque 3: tonos */
+const CURVAS = { 1: "M6 6H48", 2: "M6 21L48 5", 3: "M6 11Q20 26 30 21T48 6", 4: "M6 5L48 22", 0: "M24 14h4" };
+const NOMBRES = { 1: "1.º alto", 2: "2.º sube", 3: "3.º baja y sube", 4: "4.º cae", 0: "neutro" };
+const curva = t => `<svg class="curva" viewBox="0 0 54 26" aria-hidden="true"><path d="${CURVAS[t]}"/></svg>`;
+function conTono(base, t) {
+  if (!t) return base;
+  const M = { a: "āáǎà", e: "ēéěè", i: "īíǐì", o: "ōóǒò", u: "ūúǔù", "ü": "ǖǘǚǜ" };
+  let pos = base.search(/[ae]/);
+  if (pos < 0) pos = base.indexOf("ou");
+  if (pos < 0) { for (let i = base.length - 1; i >= 0; i--) if ("iouü".includes(base[i])) { pos = i; break; } }
+  if (pos < 0) return base;
+  return base.slice(0, pos) + M[base[pos]][t - 1] + base.slice(pos + 1);
+}
+const quitarTonos = s => s.normalize("NFD").replace(/[̀-̄̌]/g, "").normalize("NFC");
+function preguntasTonos(n = 10) {
+  const palabras = palabrasConocidas().filter(p => p.t && p.t !== "0"); // 的, 了… solo suenan bien dentro de una frase
+  const qs = [];
+  for (let i = 0; i < n; i++) {
+    if (palabras.length >= 6 && i % 2 === 1) {
+      const p = palabras[Math.floor(Math.random() * palabras.length)];
+      const correcta = p.t;
+      const ops = new Set([correcta]);
+      const partes = correcta.split("-");
+      let intentos = 0;
+      while (ops.size < 4 && intentos++ < 50) {
+        const v = partes.map(x => (Math.random() < .5 ? x : String(1 + Math.floor(Math.random() * 4))));
+        ops.add(v.join("-"));
+      }
+      qs.push({ tipo: "palabra", p, correcta, ops: [...ops].sort(() => Math.random() - .5) });
+    } else {
+      const q = D.cuartetos[Math.floor(Math.random() * D.cuartetos.length)];
+      const t = 1 + Math.floor(Math.random() * 4);
+      qs.push({ tipo: "silaba", base: q.b, h: q.h[t - 1], correcta: String(t), ops: ["1", "2", "3", "4"] });
+    }
+  }
+  return qs;
+}
+function sesionTonos(panel, alTerminar, contar = true) {
+  const qs = preguntasTonos();
+  let i = 0, aciertos = 0;
+  const sig = () => {
+    if (i >= qs.length) {
+      if (contar) { const r = registroDia(); r.ton += qs.length; r.tonOk += aciertos; guardar(); }
+      panel.innerHTML = `${cabecera("Tonos", `${aciertos} de ${qs.length}`, 1)}<p class="nota"><b>${aciertos} de ${qs.length} aciertos.</b> ${aciertos >= 8 ? "Muy buen oído." : "Normal al principio: el 1.º y el 4.º se confunden mucho. Repite en voz alta exagerando la curva."}</p><div class="btns" id="acc"></div>`;
+      alTerminar(panel.querySelector("#acc"));
+      return;
+    }
+    const q = qs[i++];
+    const opHTML = q.ops.map(o => {
+      const ts = o.split("-");
+      const etiqueta = q.tipo === "silaba" ? conTono(q.base, +o) : ts.map(t => t === "0" ? "·" : t).join(" · ");
+      return `<button class="op" data-o="${o}">${ts.length === 1 ? curva(+o) : ""}<span class="py">${esc(etiqueta)}</span><span class="etq">${ts.length === 1 ? NOMBRES[o] : ts.map(t => NOMBRES[t].split(" ")[0]).join(" ")}</span></button>`;
+    }).join("");
+    const enunciado = q.tipo === "silaba" ? `<span class="py">${esc(q.base)}</span><span class="sig">¿Qué tono oyes?</span>` : `<span class="hz" style="font-size:40px">${esc(q.p.h)}</span><span class="py">${esc(quitarTonos(q.p.p))}</span><span class="sig">¿Qué tonos tiene? (· es neutro)</span>`;
+    const audio = q.tipo === "silaba" ? q.h : q.p.a;
+    panel.innerHTML = `${cabecera("Tonos", `${i} de ${qs.length}`, i / qs.length)}
+      <div class="pista">${enunciado}<div>${botonAudio(audio, "Escuchar otra vez")}</div></div>
+      <div class="tonos-op">${opHTML}</div><p class="aviso" id="expl"></p><div class="btns" id="acc"></div>`;
+    setTimeout(() => sonar(audio), 200);
+    panel.querySelectorAll(".op").forEach(b => b.addEventListener("click", () => {
+      if (panel.querySelector(".op.ok")) return;
+      const bien = b.dataset.o === q.correcta;
+      if (bien) aciertos++;
+      panel.querySelectorAll(".op").forEach(x => { if (x.dataset.o === q.correcta) x.classList.add("ok"); else if (x === b) x.classList.add("mal"); x.disabled = true; });
+      let expl = q.tipo === "silaba" ? `${q.h} = ${conTono(q.base, +q.correcta)}` : `${q.p.h} = ${q.p.p}: ${q.p.s}`;
+      if (q.tipo === "palabra" && /3-3/.test(q.correcta)) expl += ". Ojo: dos 3.º tonos seguidos se pronuncian 2.º + 3.º.";
+      if (q.tipo === "palabra" && q.p.h.startsWith("不") && q.correcta.startsWith("2")) expl += ". 不 pasa a 2.º tono antes de un 4.º.";
+      $("#expl").textContent = expl;
+      sonar(audio);
+      $("#acc").innerHTML = `<button class="btn pri ancho" id="b-s">Siguiente</button>`;
+      $("#b-s").addEventListener("click", sig);
+    }));
+  };
+  sig();
+}
+function blqTonos(panel, fin) {
+  sesionTonos(panel, acc => { acc.innerHTML = `<button class="btn pri" id="b-fin">Siguiente bloque</button>`; $("#b-fin").addEventListener("click", fin); });
+}
+
+/* Bloque 4: lectura */
+let LECTURAS = [...D.lecturas];
+function estadoLectura(l) {
+  const glos = new Set(l.glosas.map(g => g.h).join(""));
+  const hs = new Set(l.lineas.map(x => x.h).join("").replace(/[^一-鿿]/g, ""));
+  const necesarios = [...hs].filter(h => !glos.has(h));
+  const sabe = necesarios.filter(h => S.cartas[h]).length;
+  return { sabe, total: necesarios.length, abierta: necesarios.length === 0 || sabe / necesarios.length >= .8 };
+}
+function lecturaDeHoy() {
+  const abiertas = LECTURAS.filter(l => estadoLectura(l).abierta).sort((a, b) => a.orden - b.orden);
+  return abiertas.find(l => !S.lecturas[l.id]) || abiertas[abiertas.length - 1] || null;
+}
+function blqLeer(panel, fin) {
+  const l = lecturaDeHoy();
+  if (!l) {
+    const pal = palabrasConocidas();
+    panel.innerHTML = `${cabecera("Escucha", "Antes de leer", 1)}
+      <p class="vacio">La primera lectura se abre cuando sepas casi todos sus caracteres. Mientras tanto: escucha cada palabra que ya sabes y repítela en voz alta 3 veces, imitando la melodía.</p>
+      ${pal.length ? `<div class="ejemplos">${pal.map(p => `<button class="ej" data-audio="${esc(p.a)}"><span class="hz">${esc(p.h)}</span><span class="p">${esc(p.p)}</span><span class="s">${esc(p.s)}</span><span class="mini-alt">▶</span></button>`).join("")}</div>` : `<p class="aviso">Aún no hay palabras completas. Vuelve después de los caracteres nuevos o escucha los tonos de la guía.</p>`}
+      <div class="btns"><button class="btn pri" id="b-fin">Hecho</button></div>`;
+    $("#b-fin").addEventListener("click", fin);
+    return;
+  }
+  lector(panel, l, () => { S.lecturas[l.id] = Date.now(); registroDia().lec++; guardar(); fin(); });
+}
+function lector(panel, l, alTerminar) {
+  const glosas = new Map(l.glosas.map(g => [g.h, g]));
+  const marcar = txt => {
+    // subraya lo que aún no sabes; las glosas aparecen debajo
+    return [...txt].map(ch => /[一-鿿]/.test(ch) && !S.cartas[ch] ? `<u>${esc(ch)}</u>` : esc(ch)).join("");
+  };
+  let verPy = false, verEs = false;
+  panel.innerHTML = `${cabecera(esc(l.titulo), esc(l.nivel), 1)}
+    <p class="aviso">1. Escucha todo. 2. Toca cada línea, escúchala y repítela a la vez que el audio (shadowing), 3 veces. 3. Léela sola en voz alta. Lo subrayado aún no lo has estudiado.</p>
+    <div class="interruptores"><button class="interruptor" id="t-todo">▶ Escuchar todo</button><button class="interruptor" id="t-py" aria-pressed="false">Pinyin</button><button class="interruptor" id="t-es" aria-pressed="false">Traducción</button></div>
+    <div id="lineas">${l.lineas.map((x, i) => `<button class="linea" data-i="${i}"><span class="hz">${marcar(x.h)}</span><span class="py" hidden>${esc(x.p)}</span><span class="es" hidden>${esc(x.s)}</span></button>`).join("")}</div>
+    ${l.glosas.length ? `<div class="glosas"><span class="etq">Palabras nuevas</span>${l.glosas.map(g => `<span><span class="hz">${esc(g.h)}</span> ${esc(g.p)}: ${esc(g.s)}</span>`).join("")}</div>` : ""}
+    <div class="btns" id="acc"><button class="btn pri ancho" id="b-leida">La leí en voz alta</button></div>`;
+  const lineas = [...panel.querySelectorAll(".linea")];
+  const resaltar = i => lineas.forEach((b, j) => b.classList.toggle("sonando", j === i));
+  lineas.forEach(b => b.addEventListener("click", () => { const i = +b.dataset.i; resaltar(i); sonar(l.lineas[i].h, () => resaltar(-1)); }));
+  $("#t-todo").addEventListener("click", () => {
+    let i = 0;
+    const paso = () => { if (i >= l.lineas.length) return resaltar(-1); resaltar(i); sonar(l.lineas[i].h, () => setTimeout(paso, 500)); i++; };
+    paso();
+  });
+  $("#t-py").addEventListener("click", e => { verPy = !verPy; e.currentTarget.setAttribute("aria-pressed", verPy); panel.querySelectorAll(".linea .py").forEach(x => (x.hidden = !verPy)); });
+  $("#t-es").addEventListener("click", e => { verEs = !verEs; e.currentTarget.setAttribute("aria-pressed", verEs); panel.querySelectorAll(".linea .es").forEach(x => (x.hidden = !verEs)); });
+  $("#b-leida").addEventListener("click", alTerminar);
+}
+
+/* Bloque 5: frases (las corrige el servidor con IA) */
+function blqFrases(panel, fin) {
+  const sabe = aprendidos().filter(c => c.t !== "c").map(c => c.h).join("");
+  panel.innerHTML = `${cabecera("Tus frases", fechaLarga(HOY()), 1)}
+    <p class="aviso">Escribe 2 o 3 frases con lo que sabes, primero a mano en el cuaderno y luego aquí con el teclado pinyin del celular (añade «Chino simplificado, pinyin» en los idiomas del teclado).${sabe.length < 15 ? " Hoy basta con números y saludos: 你好！一二三。" : ""}</p>
+    <textarea id="t-frases" lang="zh-CN" placeholder="我好。你好吗？"></textarea>
+    <div class="btns" id="acc"><button class="btn sec" id="b-saltar">Solo en el cuaderno</button><button class="btn pri ancho" id="b-corr">Corregir</button></div>
+    <div id="res"></div>`;
+  try { $("#t-frases").value = localStorage.getItem(CLAVE + "-borrador") || ""; } catch (e) {}
+  $("#t-frases").addEventListener("input", e => { try { localStorage.setItem(CLAVE + "-borrador", e.target.value); } catch (er) {} });
+  $("#b-saltar").addEventListener("click", fin);
+  $("#b-corr").addEventListener("click", async () => {
+    const texto = $("#t-frases").value.trim();
+    if (!texto) { $("#res").innerHTML = `<p class="aviso">Escribe al menos una frase.</p>`; return; }
+    const btn = $("#b-corr"); btn.disabled = true;
+    let resultado = null;
+    $("#res").innerHTML = `<p class="aviso">Revisando tus frases…</p>`;
+    try {
+      resultado = await api("/corregir", { method: "POST", body: JSON.stringify({ texto, sabe, inicio: fechaLarga(INICIO()) }) });
+    } catch (e) {
+      $("#res").innerHTML = `<p class="aviso">${e.codigo === "limite" ? "Ya usaste las 20 correcciones de hoy. Tus frases quedan guardadas; mañana hay más." : "No pude corregirlas ahora (¿sin internet?). Quedan guardadas para revisarlas después."}</p>`;
+    }
+    await guardarFrases(texto, resultado);
+    registroDia().fr++; guardar();
+    try { localStorage.removeItem(CLAVE + "-borrador"); } catch (e) {}
+    if (resultado && Array.isArray(resultado.frases)) $("#res").innerHTML = correccionHTML(resultado) + `<p class="aviso">Corrección automática con IA: casi siempre acierta, pero no es un profesor. Si algo no te cuadra, pregúntalo.</p>`;
+    $("#acc").innerHTML = `<button class="btn pri ancho" id="b-fin">Terminar la sesión</button>`;
+    $("#b-fin").addEventListener("click", fin);
+  });
+}
+function correccionHTML(r) {
+  return `<div>${r.frases.map(f => `<div class="corr">
+      ${f.ok ? `<span class="etq" style="color:var(--ok)">Correcta</span>` : `<span class="mal-txt hz">${esc(f.original)}</span>`}
+      <span class="hz">${esc(f.correcta || f.original)}</span>
+      <span>${esc(f.pinyin)}</span><span class="es">${esc(f.traduccion)}</span>
+      ${f.nota ? `<span class="es">${esc(f.nota)}</span>` : ""}</div>`).join("")}
+    ${r.animo ? `<p class="nota">${esc(r.animo)}</p>` : ""}</div>`;
+}
+async function guardarFrases(texto, resultado) {
+  try { await api("/frases", { method: "POST", body: JSON.stringify({ fecha: HOY(), texto, resultado: resultado || null }) }); } catch (e) {}
+}
+
+/* ---------- ESCRIBIR (práctica libre) ---------- */
+let elegido = null;
+function pintarEscribir() {
+  const el = $("#v-escribir");
+  const lista = [...aprendidos(), ...porAprender().slice(0, S.porDia)];
+  if (!elegido || !lista.find(c => c.h === elegido)) elegido = (aprendidos().slice(-1)[0] || lista[0]).h;
+  const c = POR_H[elegido];
+  el.innerHTML = `<div class="paso"><h2>Escribir</h2><span class="etq num">${aprendidos().length} aprendidos</span></div>
+    <p class="aviso">Practica cualquier carácter cuando quieras. Los que aún no aprendiste salen en gris.</p>
+    <div class="selector">${lista.map(x => `<button class="${S.cartas[x.h] ? "" : "nuevo"}" data-h="${esc(x.h)}" aria-pressed="${x.h === elegido}">${esc(x.h)}</button>`).join("")}</div>
+    ${fichaHTML(c)}
+    <div id="zona"></div>
+    <div class="btns"><button class="btn sec" id="b-anim">Animar</button><button class="btn sec" id="b-calca">Calcar</button><button class="btn pri" id="b-mem">De memoria</button></div>`;
+  el.querySelectorAll(".selector button").forEach(b => b.addEventListener("click", () => { elegido = b.dataset.h; detenerTodo(); pintarEscribir(); }));
+  const anim = () => { detenerTodo(); const w = lienzo($("#zona"), c.h, { showOutline: true }); w.animateCharacter(); escritorActual = w; };
+  anim();
+  $("#b-anim").addEventListener("click", anim);
+  $("#b-calca").addEventListener("click", () => { detenerTodo(); escritorActual = ejercicio($("#zona"), c.h, "calca"); });
+  $("#b-mem").addEventListener("click", () => { detenerTodo(); escritorActual = ejercicio($("#zona"), c.h, "memoria"); });
+}
+
+/* ---------- TONOS (práctica libre) ---------- */
+function pintarTonos() {
+  const el = $("#v-tonos");
+  el.innerHTML = `<div class="paso"><h2>Tonos</h2><span class="etq">Práctica libre</span></div>
+    <p class="aviso">El tono cambia el significado: 妈 mā es «mamá» y 马 mǎ es «caballo». Toca cada sílaba, escúchala y repítela exagerando la curva.</p>
+    <div class="cuarteto">${[1, 2, 3, 4].map(t => `<button data-audio="${"妈麻马骂"[t - 1]}">${curva(t)}<span class="hz">${"妈麻马骂"[t - 1]}</span><span class="py">${conTono("ma", t)}</span><span class="etq">${NOMBRES[t]}</span></button>`).join("")}</div>
+    <div class="btns"><button class="btn pri ancho" id="b-tonos">Hacer 10 preguntas</button></div>
+    <div class="panel" id="p-tonos"></div>`;
+  $("#b-tonos").addEventListener("click", () => {
+    $("#b-tonos").parentElement.hidden = true;
+    const run = () => sesionTonos($("#p-tonos"), acc => { acc.innerHTML = `<button class="btn pri" id="b-otra">Otra ronda</button>`; $("#b-otra").addEventListener("click", run); });
+    run();
+  });
+}
+
+/* ---------- LEER ---------- */
+function pintarLeer() {
+  const el = $("#v-leer");
+  const orden = [...LECTURAS].sort((a, b) => a.orden - b.orden);
+  el.innerHTML = `<div class="paso"><h2>Lecturas</h2><span class="etq num">${Object.keys(S.lecturas).length} leídas</span></div>
+    <p class="aviso">Cada lectura se abre cuando sabes el 80 % de sus caracteres. Te escribo lecturas nuevas cada semana con lo que vas aprendiendo.</p>
+    <ol class="lista-lec">${orden.map(l => {
+      const e = estadoLectura(l);
+      return `<li><button class="lec-item" data-id="${esc(l.id)}" ${e.abierta ? "" : "disabled"}>
+        <b>${esc(l.titulo)}</b><span class="chip ${S.lecturas[l.id] ? "hecho" : e.abierta ? "ahora" : ""}">${S.lecturas[l.id] ? "Leída" : e.abierta ? "Abierta" : `${e.sabe}/${e.total}`}</span>
+        <span class="etq">${esc(l.nivel)} · ${l.lineas.length} líneas</span></button></li>`;
+    }).join("")}</ol><div class="panel" id="p-leer"></div>`;
+  el.querySelectorAll(".lec-item:not([disabled])").forEach(b => b.addEventListener("click", () => {
+    const l = LECTURAS.find(x => x.id === b.dataset.id);
+    el.innerHTML = `<button class="volver" id="b-v">← Lecturas</button><div class="panel" id="p-leer"></div>`;
+    $("#b-v").addEventListener("click", pintarLeer);
+    lector($("#p-leer"), l, () => { S.lecturas[l.id] = S.lecturas[l.id] || Date.now(); guardar(); pintarLeer(); });
+  }));
+}
+
+/* ---------- AVANCE ---------- */
+async function pintarAvance() {
+  const el = $("#v-avance");
+  const n = numDia(), ap = aprendidos(), hanzi = ap.filter(c => c.t !== "c").length;
+  // días ya cerrados (sin contar hoy) en los que tocaban caracteres nuevos: todos menos los domingos
+  let conNuevos = 0;
+  for (let i = 0; i < Math.min(n, DIAS_TOTAL) - 1; i++) if (new Date(sumaDias(INICIO(), i) + "T12:00").getDay() !== 0) conNuevos++;
+  const esperado = Math.min(CH.length, conNuevos * S.porDia + registroDia().nue);
+  const dif = ap.length - esperado;
+  // racha: días seguidos con al menos un bloque, contando desde hoy o ayer
+  let racha = 0, f = HOY();
+  if (!Object.keys(registroDia(f).b).length) f = sumaDias(f, -1);
+  while (S.dias[f] && Object.keys(S.dias[f].b || {}).length) { racha++; f = sumaDias(f, -1); }
+  const pal = palabrasConocidas().length;
+  // calendario del plan: del primer día a 67 días después
+  const celdas = [];
+  for (let i = 0; i < DIAS_TOTAL; i++) {
+    const d = sumaDias(INICIO(), i), b = Object.keys((S.dias[d] || {}).b || {}).length;
+    celdas.push(`<span class="d ${b >= 5 ? "l3" : b >= 3 ? "l2" : b ? "l1" : ""} ${d === HOY() ? "hoy" : ""}" title="${esc(fechaLarga(d))}: ${b} bloques">${+d.slice(8)}</span>`);
+  }
+  const primerDow = (new Date(INICIO() + "T12:00").getDay() + 6) % 7;
+  const corta = f => { const d = new Date(f + "T12:00"); return `${d.getDate()} ${MESES[d.getMonth()].slice(0, 3)}`; };
+  el.innerHTML = `<div class="paso"><h2>Avance</h2><span class="etq num">Día ${Math.min(n, DIAS_TOTAL)} de ${DIAS_TOTAL}</span></div>
+    <div class="cifras">
+      <div class="cifra"><span class="etq">Caracteres que escribes</span><span class="v num">${hanzi} <small>/ 175</small></span></div>
+      <div class="cifra"><span class="etq">Palabras del HSK 1</span><span class="v num">${pal} <small>/ ${D.palabras.length}</small></span></div>
+      <div class="cifra"><span class="etq">Racha</span><span class="v num">${racha} <small>día${racha === 1 ? "" : "s"}</small></span></div>
+      <div class="cifra"><span class="etq">Tonos acertados</span><span class="v num">${(() => { const t = Object.values(S.dias).reduce((a, d) => [a[0] + (d.tonOk || 0), a[1] + (d.ton || 0)], [0, 0]); return t[1] ? Math.round(t[0] / t[1] * 100) + "<small> %</small>" : "—"; })()}</span></div>
+    </div>
+    <p class="ritmo">${ap.length ? (dif >= 0 ? `Vas <b>al día</b>${dif > 0 ? `, con ${dif} de ventaja` : ""}.` : `Vas <b>${-dif} por detrás</b> del plan. No intentes recuperarlo de golpe: el repaso va primero.`) : "Aún no empiezas. El plan: 5 caracteres al día, 6 días a la semana."} Meta del ${esc(fechaLarga(FIN()).replace(/^\S+ /, ""))}: el HSK 1 completo y unos 100 caracteres del HSK 2.</p>
+    <section style="display:grid;gap:10px"><span class="etq">Calendario · ${corta(INICIO())} → ${corta(FIN())}</span>
+      <div class="cal">${["L", "M", "X", "J", "V", "S", "D"].map(x => `<span class="cab">${x}</span>`).join("")}${'<span class="d fuera"></span>'.repeat(primerDow)}${celdas.join("")}</div>
+      <div class="leyenda etq"><span><i></i>0</span><span><i style="background:var(--bermellon-suave)"></i>1–2 bloques</span><span><i style="background:color-mix(in srgb, var(--bermellon) 45%, var(--papel))"></i>3–4</span><span><i style="background:var(--bermellon)"></i>sesión completa</span></div>
+    </section>
+    <section style="display:grid;gap:10px"><span class="etq">Los ${CH.length} caracteres · toca uno para practicarlo</span>
+      <div class="mapa">${CH.map((c, i) => { const fz = fuerza(c.h); const sig = !S.cartas[c.h] && porAprender().indexOf(c) < S.porDia; return `<button data-h="${esc(c.h)}" class="${fz < 0 ? (sig ? "sig" : "") : fz >= 4 ? "f3" : fz >= 2 ? "f2" : "f1"}" title="${esc(c.p + " · " + c.s)}">${esc(c.h)}</button>`; }).join("")}</div>
+      <div class="leyenda etq"><span><i style="border-color:var(--bermellon)"></i>siguientes</span><span><i style="background:var(--papel-2)"></i>recién aprendido</span><span><i style="border-color:var(--tinta-2)"></i>afianzándose</span><span><i style="background:var(--tinta)"></i>sólido</span></div>
+    </section>
+    <section style="display:grid;gap:10px"><span class="etq">Caracteres nuevos por día</span>
+      <div class="ajuste">${[3, 5, 8].map(k => `<button class="interruptor" data-pd="${k}" aria-pressed="${S.porDia === k}">${k}</button>`).join("")}<span class="aviso">5 es el ritmo del plan. Baja a 3 si los repasos pasan de 15 minutos.</span></div>
+    </section>
+    <section style="display:grid;gap:10px"><span class="etq">Tus frases</span><div id="frases"><p class="vacio">Cargando…</p></div></section>
+    <section style="display:grid;gap:10px"><span class="etq">Tu cuenta</span>
+      <p class="aviso">Entraste como <b>${esc(SESION ? SESION.usuario : "")}</b>. Tu avance se guarda en tu cuenta: entra con el mismo usuario y PIN en el celular y en el PC.</p>
+      <div class="btns"><button class="btn sec" id="b-guia2">Abrir la guía</button><button class="btn sec" id="b-compartir">Invitar a alguien</button><button class="btn sec" id="b-salir">Salir</button></div>
+      <p class="aviso" id="m-compartir" hidden></p>
+    </section>`;
+  $("#b-salir").addEventListener("click", () => { api("/salir", { method: "POST" }).catch(() => {}); cerrarSesion(); });
+  $("#b-compartir").addEventListener("click", async () => {
+    const enlace = location.origin + location.pathname;
+    const m = $("#m-compartir"); m.hidden = false;
+    try { await navigator.clipboard.writeText(enlace); m.textContent = `Enlace copiado: ${enlace}. Quien lo abra se crea su propio usuario y PIN; su avance es solo suyo.`; }
+    catch (e) { m.textContent = `Comparte este enlace: ${enlace}. Quien lo abra se crea su propio usuario y PIN.`; }
+  });
+  el.querySelectorAll(".mapa button").forEach(b => b.addEventListener("click", () => { elegido = b.dataset.h; ir("escribir"); }));
+  el.querySelectorAll("[data-pd]").forEach(b => b.addEventListener("click", () => { S.porDia = +b.dataset.pd; guardar(); pintarAvance(); }));
+  $("#b-guia2").addEventListener("click", () => ir("guia"));
+  try {
+    const lista = await api("/frases");
+    const caja = $("#frases"); if (!caja) return;
+    caja.innerHTML = !lista.length ? `<p class="vacio">Aún no has escrito frases.</p>` : lista.map(x => `<div class="corr"><span class="etq">${esc(fechaLarga(x.fecha))}</span><span class="hz">${esc(x.texto)}</span>${x.resultado && x.resultado.frases ? x.resultado.frases.filter(f => !f.ok).map(f => `<span class="es">→ <span class="hz">${esc(f.correcta)}</span> ${esc(f.nota)}</span>`).join("") : ""}</div>`).join("");
+  } catch (e) { const caja = $("#frases"); if (caja) caja.innerHTML = `<p class="vacio">No pude cargar tus frases ahora.</p>`; }
+}
+
+/* ---------- GUÍA ---------- */
+const TRAZOS_BASICOS = [
+  ["héng 横", "Horizontal", "De izquierda a derecha.", "M10 50H90"],
+  ["shù 竖", "Vertical", "De arriba abajo.", "M50 10V90"],
+  ["piě 撇", "Barrido izquierda", "Baja curvándose hacia la izquierda.", "M70 12Q60 60 15 88"],
+  ["nà 捺", "Barrido derecha", "Baja hacia la derecha y se ensancha.", "M20 15Q45 60 88 82"],
+  ["diǎn 点", "Punto", "Un toque corto hacia abajo a la derecha.", "M42 35L58 58"],
+  ["tí 提", "Subida", "Sube en diagonal hacia la derecha.", "M18 75L82 35"],
+  ["zhé 折", "Quiebre", "Horizontal que gira y baja.", "M15 25H80V85"],
+  ["gōu 钩", "Gancho", "Termina con un golpe pequeño hacia arriba.", "M50 10V82L32 70"],
+];
+function pintarGuia() {
+  const el = $("#v-guia");
+  el.innerHTML = `<button class="volver" id="b-v">← Volver</button>
+  <div class="guia">
+    <div class="dia"><span class="etq">Semana 1</span><h2 style="border:0;font-size:30px">Guía para empezar</h2><p class="aviso">Léela una vez el primer día y vuelve cuando dudes. Toca cualquier carácter con ▶ para oírlo.</p></div>
+
+    <section><h2>1 · Los cuatro tonos</h2>
+      <p>Cada sílaba tiene una melodía, y esa melodía cambia el significado. Exagera las curvas al principio: es mejor pasarse que quedarse corto.</p>
+      <div class="cuarteto">${[1, 2, 3, 4].map(t => `<button data-audio="${"妈麻马骂"[t - 1]}">${curva(t)}<span class="hz">${"妈麻马骂"[t - 1]}</span><span class="py">${conTono("ma", t)}</span><span class="etq">${["mamá", "cáñamo", "caballo", "regañar"][t - 1]}</span></button>`).join("")}</div>
+      <div class="tabla"><table><tr><th>Tono</th><th>Cómo suena</th></tr>
+        <tr><td><b>1.º ā</b></td><td>Alto y plano, como cantar una nota sostenida.</td></tr>
+        <tr><td><b>2.º á</b></td><td>Sube, como cuando preguntas «¿Qué?» sorprendido.</td></tr>
+        <tr><td><b>3.º ǎ</b></td><td>Baja hasta abajo del todo. Dentro de una frase casi nunca vuelve a subir: piensa en él como «tono bajo».</td></tr>
+        <tr><td><b>4.º à</b></td><td>Cae fuerte y rápido, como una orden: «¡Ya!».</td></tr>
+        <tr><td><b>Neutro</b></td><td>Corto y suave, sin marca: 吗 ma, 的 de.</td></tr></table></div>
+      <p><b>Dos reglas de cambio</b> que oirás todo el tiempo: dos 3.º seguidos → el primero se dice en 2.º (你好 se escribe nǐ hǎo y suena ní hǎo). Y 不 bù pasa a bú antes de un 4.º tono (不是 bú shì).</p>
+    </section>
+
+    <section><h2>2 · El pinyin para hispanohablantes</h2>
+      <p>El pinyin usa letras latinas, pero varias no suenan como en español. Estas son las trampas:</p>
+      <div class="tabla"><table><tr><th>Letra</th><th>Suena parecido a</th><th>Ejemplo</th></tr>
+        <tr><td><b>b · d · g</b></td><td>p · t · k suaves, sin vibrar la garganta</td><td>${pyBtn("八", "bā")}</td></tr>
+        <tr><td><b>p · t · k</b></td><td>p · t · k con un soplo de aire fuerte</td><td>${pyBtn("他", "tā")}</td></tr>
+        <tr><td><b>j · q · x</b></td><td>«y» tensa · «ch» con soplo · «s» con la lengua plana tras los dientes de abajo</td><td>${pyBtn("七", "qī")} ${pyBtn("想", "xiǎng")}</td></tr>
+        <tr><td><b>zh · ch · sh · r</b></td><td>con la punta de la lengua doblada hacia atrás; r parecida a la «s» de «mismo» con zumbido</td><td>${pyBtn("中", "zhōng")} ${pyBtn("是", "shì")} ${pyBtn("人", "rén")}</td></tr>
+        <tr><td><b>z · c</b></td><td>«ds» · «ts» con soplo</td><td>${pyBtn("字", "zì")} ${pyBtn("菜", "cài")}</td></tr>
+        <tr><td><b>h</b></td><td>la «j» española, más suave</td><td>${pyBtn("好", "hǎo")}</td></tr>
+        <tr><td><b>ü</b></td><td>di «i» con los labios en «u» (la «u» francesa)</td><td>${pyBtn("女", "nǚ")}</td></tr>
+        <tr><td><b>-n · -ng</b></td><td>-n con la lengua arriba; -ng como en «tengo», desde atrás</td><td>${pyBtn("门", "mén")} ${pyBtn("生", "shēng")}</td></tr>
+        <tr><td><b>e</b></td><td>una «e» hacia atrás, casi «ə»</td><td>${pyBtn("喝", "hē")}</td></tr>
+        <tr><td><b>i</b> tras z c s zh ch sh r</td><td>no es «i»: es el zumbido de la consonante alargado</td><td>${pyBtn("十", "shí")}</td></tr></table></div>
+    </section>
+
+    <section><h2>3 · Los ocho trazos básicos</h2>
+      <p>Todos los caracteres se arman con estos trazos. En el cuaderno, escribe cada trazo en una sola pasada, sin repasar.</p>
+      <div class="trazos">${TRAZOS_BASICOS.map(t => `<div class="trazo"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="${t[3]}"/></svg><b>${t[1]}</b><span class="etq">${t[0]}</span><span class="aviso">${t[2]}</span></div>`).join("")}</div>
+    </section>
+
+    <section><h2>4 · El orden de los trazos</h2>
+      <ol class="reglas">
+        <li>De arriba abajo: 三.</li>
+        <li>De izquierda a derecha: 川, 你.</li>
+        <li>Horizontal antes que vertical cuando se cruzan: 十.</li>
+        <li>Barrido izquierda antes que barrido derecha: 人, 八.</li>
+        <li>Primero el marco, luego lo de dentro, y la tapa de abajo al final: 日, 国 («entra y cierra la puerta»).</li>
+        <li>El centro antes que los lados si son simétricos: 小, 水.</li>
+        <li>Los puntos pequeños de arriba o de la derecha van al final: 我.</li>
+      </ol>
+      <p>La web te corrige si un trazo va en otra dirección o en otro orden, así que fíjate en ella las primeras semanas.</p>
+    </section>
+
+    <section><h2>5 · Los componentes</h2>
+      <p>Casi todos los caracteres son piezas que se repiten. Una pieza suele dar el significado y otra el sonido: 妈 = 女 «mujer» + 马 mǎ «caballo», que suena parecido. Aprender las piezas convierte 175 dibujos en combinaciones.</p>
+      <div class="tabla"><table><tr><th>Pieza</th><th>Significa</th><th>Aparece en</th></tr>
+        ${[["亻", "persona", "你 他 们 作 住 做"], ["氵", "agua", "没 汉 漂"], ["讠", "palabra", "谁 语 说 话 认 识 读 请 谢"], ["口", "boca", "吗 呢 叫 吃 喝 哪 听"], ["女", "mujer", "好 她 妈 姐"], ["宀", "techo", "字 家 客"], ["木", "árbol, madera", "校 杯 机 椅 样 桌"], ["艹", "hierba", "茶 菜 苹"], ["日", "sol, día", "明 昨 是 时 星"], ["月", "luna; cuerpo", "有 朋 脑 服 期"], ["心", "corazón", "想 怎"], ["扌", "mano", "打"], ["钅", "metal", "钱 钟"], ["饣", "comida", "饭"], ["犭", "animal", "狗 猫"], ["灬", "fuego", "点 热"]].map(r => `<tr><td class="hz" style="font-size:22px">${r[0]}</td><td>${r[1]}</td><td class="hz">${r[2]}</td></tr>`).join("")}</table></div>
+    </section>
+
+    <section><h2>6 · Cómo usar el cuaderno 田字格</h2>
+      <p>Cada casilla tiene una cruz y dos diagonales punteadas. Úsalas para centrar el carácter y medir dónde empieza cada trazo. Llena el cuadro sin salirte: los caracteres ocupan siempre el mismo espacio, sean simples (一) o complejos (藏).</p>
+      <p><b>Regla de oro: escribe de memoria, no copies.</b> Mira el carácter, tápalo, escríbelo y compara. Si te equivocas, tacha y otra vez. Así se fija; copiar a la vista no deja nada.</p>
+      <p>Si no tienes cuaderno 田字格, dibuja la cuadrícula en un cuaderno cuadriculado: cuadros de 2 × 2 con la cruz a lápiz.</p>
+    </section>
+
+    <div class="btns"><button class="btn pri ancho" id="b-leida">Leída, a empezar</button></div>
+  </div>`;
+  $("#b-v").addEventListener("click", () => ir("hoy"));
+  $("#b-leida").addEventListener("click", () => { S.guia = 1; guardar(); ir("hoy"); });
+}
+function pyBtn(h, py) { return `<button class="interruptor" data-audio="${esc(h)}" style="min-height:36px;padding:6px 10px"><span class="hz">${esc(h)}</span> ${esc(py)} ▶</button>`; }
+
+/* ---------- Arranque ---------- */
+/* ---------- Entrar ---------- */
+function pintarEntrar(mensaje = "") {
+  document.querySelector(".tabs").hidden = true;
+  document.querySelectorAll(".vista").forEach(s => (s.hidden = s.id !== "v-entrar"));
+  marcaSync("");
+  $("#m-fecha").textContent = "Escribir chino, 45 minutos al día";
+  const el = $("#v-entrar");
+  el.innerHTML = `
+    <div class="dia"><span class="etq">Entrar</span><div class="grande" style="font-size:40px">Tu cuaderno</div>
+      <p class="aviso">Escribe tu usuario y un PIN de 4 números. Si es la primera vez, inventa los dos: la cuenta se crea en el momento.</p></div>
+    <form class="entrar" id="f-entrar" autocomplete="on" novalidate>
+      <label for="i-usuario" class="etq">Usuario</label>
+      <input id="i-usuario" name="username" autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="24" placeholder="por ejemplo: jhon" value="${esc((() => { try { return localStorage.getItem(CLAVE + "-ultimo") || ""; } catch (e) { return ""; } })())}">
+      <label for="i-pin" class="etq">PIN</label>
+      <input id="i-pin" name="password" type="password" inputmode="numeric" pattern="[0-9]*" autocomplete="current-password" maxlength="4" placeholder="••••">
+      <p class="estado-quiz mal" id="m-entrar" role="alert">${esc(mensaje)}</p>
+      <div class="btns" id="acc-entrar"><button class="btn pri ancho" type="submit">Entrar</button></div>
+    </form>
+    <p class="aviso">Anota tu PIN. Si lo olvidas, pídele a quien te compartió el cuaderno que lo cambie.</p>`;
+  const f = $("#f-entrar"), m = $("#m-entrar");
+  const enviar = async crear => {
+    const usuario = $("#i-usuario").value.trim(), pin = $("#i-pin").value.trim();
+    if (usuario.length < 3) { m.textContent = "El usuario necesita al menos 3 letras o números."; return; }
+    if (!/^\d{4}$/.test(pin)) { m.textContent = "El PIN son 4 números."; return; }
+    m.className = "estado-quiz"; m.textContent = crear ? "Creando tu cuenta…" : "Entrando…";
+    f.querySelectorAll("button").forEach(b => (b.disabled = true));
+    try {
+      const r = await api(crear ? "/crear" : "/entrar", { method: "POST", body: JSON.stringify({ usuario, pin }) });
+      SESION = { token: r.token, usuario: r.usuario };
+      try { localStorage.setItem(CLAVE + "-sesion", JSON.stringify(SESION)); localStorage.setItem(CLAVE + "-ultimo", r.usuario); } catch (e) {}
+      arrancar();
+    } catch (e) {
+      f.querySelectorAll("button").forEach(b => (b.disabled = false));
+      m.className = "estado-quiz mal";
+      const d = e.datos || {};
+      if (e.codigo === "no_existe") {
+        m.className = "estado-quiz";
+        m.textContent = `No hay nadie con el usuario «${usuario.toLowerCase()}». ¿Es la primera vez? Crea tu cuenta con este PIN.`;
+        $("#acc-entrar").innerHTML = `<button class="btn sec" type="button" id="b-otro">Corregir el usuario</button><button class="btn rojo ancho" type="button" id="b-crear">Crear mi cuenta</button>`;
+        $("#b-crear").addEventListener("click", () => enviar(true));
+        $("#b-otro").addEventListener("click", () => pintarEntrar());
+      } else if (e.codigo === "pin_incorrecto") m.textContent = `PIN incorrecto. Te quedan ${d.quedan} intentos.`;
+      else if (e.codigo === "bloqueado") m.textContent = `Demasiados intentos. Espera ${d.minutos || 15} minutos.`;
+      else if (e.codigo === "usuario_invalido") m.textContent = "Usa de 3 a 24 letras o números.";
+      else if (e.codigo === "ya_existe") m.textContent = "Ese usuario ya existe. Entra con su PIN o elige otro.";
+      else m.textContent = "No hay conexión con el servidor. Revisa tu internet e inténtalo otra vez.";
+    }
+  };
+  f.addEventListener("submit", e => { e.preventDefault(); enviar(false); });
+}
+function cerrarSesion() {
+  SESION = null;
+  try { localStorage.removeItem(CLAVE + "-sesion"); } catch (e) {}
+  S = estadoVacio();
+  pintarEntrar();
+}
+
+/* ---------- Arranque ---------- */
+let enMarcha = false;
+function arrancar() {
+  document.querySelector(".tabs").hidden = false;
+  $("#v-entrar").hidden = true;
+  cargarLocal();
+  $("#m-fecha").textContent = `${SESION.usuario} · meta: ${fechaLarga(FIN()).replace(/^\S+ /, "")}`;
+  let inicial = "hoy";
+  try { const v = localStorage.getItem(CLAVE + "-vista"); if (v && v !== "guia") inicial = v; } catch (e) {}
+  ir(inicial);
+  marcaSync("Conectando…");
+  traerNube().then(() => { if (!S.t) guardar(); });
+  if (!enMarcha) {
+    enMarcha = true;
+    document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") traerNube(); else subir(); });
+  }
+}
+if (SESION) arrancar(); else pintarEntrar();
+if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(() => {});
+</script>
+</body></html>

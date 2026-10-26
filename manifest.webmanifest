@@ -1,0 +1,7 @@
+{
+  "name": "Cuaderno de Hanzi", "short_name": "Hanzi", "lang": "es",
+  "start_url": "./", "display": "standalone",
+  "background_color": "#F3EFE5", "theme_color": "#B3301C",
+  "icons": [{"src": "icono-192.png", "sizes": "192x192", "type": "image/png"},
+            {"src": "icono-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}]
+}
