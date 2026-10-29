@@ -182,6 +182,19 @@ textarea { width: 100%; min-height: 120px; resize: vertical; font: 400 22px/1.5 
 .corr .hz { font-size: 22px; }
 .corr .mal-txt { text-decoration: line-through; color: var(--tinta-2); font-size: 18px; }
 .corr .es { color: var(--tinta-2); font-size: 14.5px; }
+.teclado { display: grid; gap: 8px; }
+.teclado input { width: 100%; font: 400 18px var(--texto); background: var(--papel-2); color: var(--tinta); border: 1px solid var(--linea); border-radius: 2px; padding: 10px 12px; min-height: 44px; }
+.teclas { display: grid; grid-template-columns: repeat(auto-fill, minmax(56px, 1fr)); gap: 4px; max-height: 236px; overflow-y: auto; }
+.tecla { display: grid; gap: 3px; place-items: center; align-content: center; padding: 7px 2px; min-height: 56px; border: 1px solid var(--linea); background: var(--papel-2); color: var(--tinta); border-radius: 2px; }
+.tecla .hz { font-size: 24px; line-height: 1; }
+.tecla small { font: 400 12px/1 var(--texto); color: var(--tinta-2); }
+.tecla.larga { grid-column: span 2; }
+.signos { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; }
+.signos .tecla { min-height: 44px; font: 500 20px/1 var(--hanzi); }
+.teclas .vacio { grid-column: 1 / -1; color: var(--tinta-2); font-size: 14.5px; margin: 6px 0; }
+.tarea { display: grid; gap: 4px; }
+.tarea b { font: 600 22px/1.25 var(--texto); }
+#t-frases.corto { min-height: 64px; }
 
 /* Avance */
 .cifras { display: grid; grid-template-columns: repeat(2, 1fr); border-top: 1px solid var(--tinta); }
@@ -515,7 +528,7 @@ function detalleBloque(id) {
   if (id === "nuevos") { const q = Math.max(0, S.porDia - r.nue), sig = porAprender().slice(0, q || S.porDia).map(c => c.h).join(" "); return r.nue >= S.porDia ? `Hoy aprendiste ${r.nue}. Puedes sumar más si quieres` : `${q} nuevos: ${sig}`; }
   if (id === "tonos") return aprendidos().length < 30 ? "10 preguntas: sílabas sueltas" : "10 preguntas: sílabas y palabras que ya sabes";
   if (id === "leer") { const l = lecturaDeHoy(); return l ? `«${l.titulo}». Escucha, lee y repite en voz alta` : "La primera lectura se abre cuando sepas unos 30 caracteres. Hoy: escucha las palabras que ya sabes"; }
-  if (id === "frases") return aprendidos().length < 15 ? "Con lo que sabes: escribe números y saludos" : "2 o 3 frases con lo de hoy. El corrector te las revisa";
+  if (id === "frases") return aprendidos().length < 15 ? "Arma números y palabras con lo que ya sabes" : "2 o 3 frases con lo de hoy. El corrector te las revisa";
 }
 function pintarHoy() {
   sesionActiva = false;
@@ -853,13 +866,16 @@ function lector(panel, l, alTerminar) {
 }
 
 /* Bloque 5: frases (las corrige el servidor con IA) */
-function blqFrases(panel, fin) {
+function blqFrases(panel, fin, libre = false) {
   const sabe = aprendidos().filter(c => c.t !== "c").map(c => c.h).join("");
+  if (sabe.length < 15 && !libre) return blqArmar(panel, fin, sabe);
   panel.innerHTML = `${cabecera("Tus frases", fechaLarga(HOY()), 1)}
-    <p class="aviso">Escribe 2 o 3 frases con lo que sabes, primero a mano en el cuaderno y luego aquí con el teclado pinyin del celular (añade «Chino simplificado, pinyin» en los idiomas del teclado).${sabe.length < 15 ? " Hoy basta con números y saludos: 你好！一二三。" : ""}</p>
-    <textarea id="t-frases" lang="zh-CN" placeholder="我好。你好吗？"></textarea>
+    <p class="aviso">Escribe 2 o 3 frases con lo que sabes, primero a mano en el cuaderno y luego aquí. Para escribir en chino, usa el teclado de abajo: escribe el pinyin sin tonos y toca el carácter.</p>
+    <textarea id="t-frases" lang="zh-CN" placeholder="Toca los caracteres del teclado…"></textarea>
+    <div id="teclado"></div>
     <div class="btns" id="acc"><button class="btn sec" id="b-saltar">Solo en el cuaderno</button><button class="btn pri ancho" id="b-corr">Corregir</button></div>
     <div id="res"></div>`;
+  montarTeclado($("#teclado"), $("#t-frases"));
   try { $("#t-frases").value = localStorage.getItem(CLAVE + "-borrador") || ""; } catch (e) {}
   $("#t-frases").addEventListener("input", e => { try { localStorage.setItem(CLAVE + "-borrador", e.target.value); } catch (er) {} });
   $("#b-saltar").addEventListener("click", fin);
@@ -882,6 +898,141 @@ function blqFrases(panel, fin) {
     $("#b-fin").addEventListener("click", fin);
   });
 }
+
+/* Con pocos caracteres todavía no salen frases: se arman números y palabras que ya sabes. Se corrige aquí mismo. */
+const DIGITOS = "一二三四五六七八九";
+function numeroZh(n) {
+  const d = k => DIGITOS[k - 1], u = n % 10, t = Math.floor(n / 10);
+  if (n < 10) return d(n);
+  return (t > 1 ? d(t) : "") + "十" + (u ? d(u) : "");
+}
+function numeroEs(n) {
+  const U = ["", "uno", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve"];
+  const E = { 10: "diez", 11: "once", 12: "doce", 13: "trece", 14: "catorce", 15: "quince", 16: "dieciséis", 17: "diecisiete", 18: "dieciocho", 19: "diecinueve", 20: "veinte", 22: "veintidós", 23: "veintitrés", 26: "veintiséis" };
+  const D = ["", "", "", "treinta", "cuarenta", "cincuenta", "sesenta", "setenta", "ochenta", "noventa"];
+  if (n < 10) return U[n];
+  if (E[n]) return E[n];
+  if (n < 30) return "veinti" + U[n % 10];
+  return D[Math.floor(n / 10)] + (n % 10 ? " y " + U[n % 10] : "");
+}
+const pinyinDe = zh => [...zh].map(ch => POR_H[ch] ? POR_H[ch].p : "").join("");
+function tareasArmar(sabe) {
+  const tiene = s => [...s].every(ch => sabe.includes(ch));
+  const mezclar = a => a.sort(() => Math.random() - .5);
+  const numeros = [];
+  for (let n = 11; n <= 99; n++) { const zh = numeroZh(n); if (tiene(zh)) numeros.push({ es: `${numeroEs(n)} · ${n}`, zh, num: true }); }
+  const vistas = new Set();
+  const palabras = [];
+  for (const p of D.palabras) if (tiene(p.h) && !vistas.has(p.h)) { vistas.add(p.h); palabras.push({ es: p.s, zh: p.h }); }
+  for (const c of aprendidos()) if (c.t !== "c" && !vistas.has(c.h)) { vistas.add(c.h); palabras.push({ es: c.s, zh: c.h }); }
+  const largas = mezclar(palabras.filter(p => p.zh.length > 1)), cortas = mezclar(palabras.filter(p => p.zh.length === 1 && !DIGITOS.includes(p.zh) && p.zh !== "十"));
+  const t = [...largas.slice(0, 2), ...cortas.slice(0, 1)];
+  t.push(...mezclar(numeros).slice(0, 5 - t.length));
+  if (t.length < 5) t.push(...mezclar(palabras.filter(p => !t.includes(p))).slice(0, 5 - t.length));
+  return mezclar(t);
+}
+function blqArmar(panel, fin, sabe) {
+  const tareas = tareasArmar(sabe);
+  const hayNumeros = tareas.some(t => t.num);
+  let i = 0, aciertos = 0;
+  const limpiar = s => s.replace(/[\s，。！？,.!?]/g, "");
+  const sig = () => {
+    if (i >= tareas.length) {
+      registroDia().fr++; guardar();
+      panel.innerHTML = `${cabecera("Arma con lo que sabes", fechaLarga(HOY()), 1)}
+        <p class="aviso">${aciertos} de ${tareas.length}. Cuando sepas unos 15 caracteres, aquí vas a escribir frases de verdad y el corrector te las va a revisar.</p>
+        <div class="btns"><button class="btn sec" id="b-libre">Escribir algo libre</button><button class="btn pri ancho" id="b-fin">Terminar la sesión</button></div>`;
+      $("#b-fin").addEventListener("click", fin);
+      $("#b-libre").addEventListener("click", () => blqFrases(panel, fin, true));
+      return;
+    }
+    const t = tareas[i];
+    panel.innerHTML = `${cabecera("Arma con lo que sabes", `${i + 1} de ${tareas.length}`, (i + .1) / tareas.length)}
+      ${i === 0 ? `<p class="aviso">Todavía no sabes caracteres para hacer frases, así que hoy armas palabras${hayNumeros ? " y números" : ""} con los que ya tienes. Escríbelo primero a mano en el cuaderno y luego aquí, con el teclado de abajo.</p>` : ""}
+      ${hayNumeros && t.num ? `<p class="nota">Los números se arman por bloques: 12 = 十二 (diez + dos), 20 = 二十 (dos diez), 32 = 三十二 (tres diez dos).</p>` : ""}
+      <div class="tarea"><span class="etq">Escribe en chino</span><b>${esc(t.es)}</b></div>
+      <textarea id="t-frases" class="corto" lang="zh-CN" placeholder="Toca los caracteres del teclado…"></textarea>
+      <div id="teclado"></div>
+      <div id="res"></div>
+      <div class="btns" id="acc"><button class="btn sec" id="b-nose">No lo sé</button><button class="btn pri ancho" id="b-comp">Comprobar</button></div>`;
+    montarTeclado($("#teclado"), $("#t-frases"));
+    const mostrar = ok => {
+      if (ok) aciertos++;
+      $("#res").innerHTML = `<div class="corr">${ok ? `<span class="etq" style="color:var(--ok)">Correcto</span>` : `<span class="etq" style="color:var(--mal)">Así se escribe</span>`}
+        <span class="hz">${esc(t.zh)}</span><span>${esc(pinyinDe(t.zh))}</span></div>`;
+      $("#acc").innerHTML = `<button class="btn pri ancho" id="b-sig">${i + 1 < tareas.length ? "Siguiente" : "Ver resultado"}</button>`;
+      $("#b-sig").addEventListener("click", () => { i++; sig(); window.scrollTo(0, 0); });
+    };
+    $("#b-nose").addEventListener("click", () => mostrar(false));
+    $("#b-comp").addEventListener("click", () => {
+      const v = limpiar($("#t-frases").value);
+      if (!v) { $("#res").innerHTML = `<p class="aviso">Escribe tu respuesta con el teclado de abajo.</p>`; return; }
+      mostrar(v === t.zh);
+    });
+  };
+  sig();
+}
+
+/* Teclado propio: escribes el pinyin sin tonos con tu teclado normal y tocas el carácter.
+   Así funcionan los teclados chinos de verdad, pero solo con lo que ya sabes. */
+function clavePinyin(p) {
+  return p.toLowerCase().replace(/[ǖǘǚǜü]/g, "v").normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z]/g, "");
+}
+function montarTeclado(cont, ta) {
+  const vistos = new Set();
+  const teclas = [];
+  for (const c of aprendidos()) if (c.t !== "c") { vistos.add(c.h); teclas.push({ h: c.h, p: c.p }); }
+  for (const p of palabrasConocidas()) if (!vistos.has(p.h)) { vistos.add(p.h); teclas.push({ h: p.h, p: p.p }); }
+  for (const k of teclas) { k.k = clavePinyin(k.p); k.u = k.k.replace(/v/g, "u"); }
+  cont.innerHTML = `<div class="teclado">
+      <label class="etq" for="k-py">Teclado del cuaderno · escribe el pinyin sin tonos</label>
+      <input id="k-py" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="done" placeholder="por ejemplo: ren → 人">
+      <div class="teclas" id="k-teclas"></div>
+      <div class="signos">${["，", "。", "！", "？"].map(s => `<button type="button" class="tecla" data-ins="${s}">${s}</button>`).join("")}<button type="button" class="tecla" data-borrar aria-label="Borrar">⌫</button></div>
+    </div>`;
+  const entrada = $("#k-py", cont);
+  let pos = null;
+  const recordar = () => { pos = [ta.selectionStart, ta.selectionEnd]; };
+  ["input", "click", "keyup", "select", "blur"].forEach(ev => ta.addEventListener(ev, recordar));
+  const avisar = () => ta.dispatchEvent(new Event("input"));
+  const insertar = txt => {
+    const [a, b] = pos || [ta.value.length, ta.value.length];
+    ta.value = ta.value.slice(0, a) + txt + ta.value.slice(b);
+    pos = [a + txt.length, a + txt.length];
+    avisar();
+  };
+  const borrar = () => {
+    const [a, b] = pos || [ta.value.length, ta.value.length];
+    if (a !== b) { ta.value = ta.value.slice(0, a) + ta.value.slice(b); pos = [a, a]; }
+    else if (a > 0) { ta.value = ta.value.slice(0, a - 1) + ta.value.slice(a); pos = [a - 1, a - 1]; }
+    avisar();
+  };
+  const candidatos = () => {
+    const q = clavePinyin(entrada.value.replace(/ü/g, "v"));
+    if (!q) return teclas;
+    return teclas.filter(k => k.k.startsWith(q) || k.u.startsWith(q)).sort((x, y) => (x.k === q || x.u === q ? 0 : 1) - (y.k === q || y.u === q ? 0 : 1) || x.k.length - y.k.length);
+  };
+  const pintar = () => {
+    const lista = candidatos();
+    $("#k-teclas", cont).innerHTML = !teclas.length ? `<p class="vacio">Aquí aparecen los caracteres a medida que los aprendes.</p>`
+      : !lista.length ? `<p class="vacio">Ningún carácter que sepas se escribe «${esc(entrada.value)}».</p>`
+      : lista.map(k => `<button type="button" class="tecla${k.h.length > 1 ? " larga" : ""}" data-ins="${esc(k.h)}"><span class="hz">${esc(k.h)}</span><small>${esc(k.p)}</small></button>`).join("");
+  };
+  entrada.addEventListener("input", pintar);
+  entrada.addEventListener("keydown", e => {
+    if (e.key === "Enter") { e.preventDefault(); const l = candidatos(); if (entrada.value && l.length) { insertar(l[0].h); entrada.value = ""; pintar(); } }
+    else if (e.key === "Backspace" && !entrada.value) { e.preventDefault(); borrar(); }
+  });
+  // Que tocar una tecla no le quite el foco a la caja de pinyin (así no se cierra el teclado del celular).
+  ["pointerdown", "mousedown"].forEach(ev => cont.addEventListener(ev, e => { if (e.target.closest("button")) e.preventDefault(); }));
+  cont.addEventListener("click", e => {
+    const b = e.target.closest("button"); if (!b) return;
+    if (b.hasAttribute("data-borrar")) borrar();
+    else { insertar(b.dataset.ins); if (entrada.value && !/[，。！？]/.test(b.dataset.ins)) { entrada.value = ""; pintar(); } }
+  });
+  pintar();
+}
+
 function correccionHTML(r) {
   return `<div>${r.frases.map(f => `<div class="corr">
       ${f.ok ? `<span class="etq" style="color:var(--ok)">Correcta</span>` : `<span class="mal-txt hz">${esc(f.original)}</span>`}
